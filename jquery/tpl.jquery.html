@@ -1,0 +1,77 @@
+<html>
+	<head>
+		<script src="jquery-1.6.1.js"></script>
+		<script src="jquery.smarty.js"></script>
+	</head>
+	<body>
+		<script type="text/html" id="template">
+			{assign var="id" value="0"}			
+			{$date|date_format:"%A, %B %e, %Y":"qwe '"|length}
+			Date: {$date|date_format:"%A, %B %e, %Y"}
+			<select>
+				<option value="0">123
+				{assign var="testvar" value="TROLOLO"}
+				{assign var="testvar2" value=10}
+				{assign var="testvar4" value=.01}
+				{assign var="testvar7" value=$testvar}
+				{$testvar7}
+				{literal}
+					sddsdsds
+					123{$testvar}
+					{assign var="testvar" value="TROLOLO"}
+				{/literal}
+				{capture assign="captured"}
+					{$testvar}
+					qweqwe
+				{/capture}
+				</option>
+				{foreach from=$groups item=order key=key}
+				<option value="{$order.group_id}">
+					{$key}
+					{$order.domain}{$order.uri}
+					&nbsp;&nbsp;-&nbsp;&nbsp;
+					{$order.task_text|substr:0:50}...
+					&nbsp;&nbsp;-&nbsp;&nbsp;
+					{$order.keywords},					
+					{$testvar}
+					{* 
+					include id="a" testvar="ROFL" 
+					*}
+					{$testvar}
+					{$order.domain}
+					{if $order.id|length gt 0 and 1 eq 1 || text == "text"}
+						ID
+					{/if}
+				</option>
+				{/foreach}
+			</select>
+			{$captured}
+			{$testvar2}
+			{for from=20 to=$groups|length step=-2 key='i'}
+				{$i}<br />
+			{/for}
+		</script>
+		<div id="result"></div>
+		<script>
+			var data =  {"date": 1234567890, "groups":[{"id":"1","domain_id":"4053","uri_id":"3","symbol_count":"2000","work_type":"copyright","status_code":"1","created":"2011-03-15 11:24:22","deadline":"2011-03-15 21:24:22","reworks":"0","article_type":"for_link","task_text":"123","group_id":"1","customer_id":"16","text_id":"0","domain":"test.ru","uri":"\/","status":"asdasd","author":"Lavr","keywords":null,"anchors":null},{"id":"2","domain_id":"4053","uri_id":"3","symbol_count":"2000","work_type":"copyright","status_code":"1","created":"2011-03-15 11:24:22","deadline":"2011-03-15 21:24:22","reworks":"0","article_type":"for_link","task_text":"Lorem Ipsum - ","group_id":"2","customer_id":"16","text_id":"0","domain":"test.ru","uri":"\/","status":"","author":"Lavr","keywords":null,"anchors":null},{"id":"3","domain_id":"4053","uri_id":"3","symbol_count":"2000","work_type":"copyright","status_code":"0","created":"2011-03-15 11:24:22","deadline":"2011-03-15 21:24:22","reworks":"0","article_type":"for_link","task_text":"Lorem Ipsum - ","group_id":"3","customer_id":"16","text_id":"0","domain":"test.ru","uri":"\/","status":"\u0421\u0432\u043e\u0431\u043e\u0434\u0435\u043d","author":null,"keywords":null,"anchors":null},{"id":"6","domain_id":"4518","uri_id":"4775","symbol_count":"2000","work_type":"copyright","status_code":"2","created":"2011-03-15 15:37:17","deadline":"0000-00-00 00:00:00","reworks":"0","article_type":"lk_page","task_text":"\u043d\u0430\u043f\u0438\u0441\u0430\u0442\u044c \u0441\u0442\u0430\u0442\u044c\u044e \u0434\u043b\u044f \u0440\u0430\u0437\u0432\u0438\u0442\u0438\u044f \u041b\u041a","group_id":"4","customer_id":"16","text_id":"3","domain":"sanimport.megasklad.ru","uri":"\/page1261648847","status":"","author":"Lavr","keywords":"","anchors":""}]}
+		
+			$.Smarty({
+				debugMode: true,
+				onIncludes: function(templateIds){
+					for( var i = 0; i < templateIds.length; i++ ){
+						var script = document.createElement("SCRIPT");
+						script.src = templateIds[i] + ".js";
+						script.async = true;
+						document.body.appendChild(script);
+					}				
+				}
+			});
+		
+			$('#template').Smarty('exec', data, function(result){
+				// TODO: Result - jquery object
+				$("#result").html(result);
+			});
+		</script>
+	</body>
+</html>
+
