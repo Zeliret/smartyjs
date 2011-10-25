@@ -1835,13 +1835,25 @@ smarty.addEntity('assign', {
 * 
 *******************************************************************/
 
+/**
+ * Return default value if var is empty
+ * @param {Object}	input	Origin variable value
+ * @param {String}	value	Default variable value if its empty
+ * @example {$balalaika|default:'broken'}
+ */
 smarty.addModifier('default', function(input, value){
-	if( !input )
+	if( smarty.modifiers.empty(input) )
 		return value;
 	
 	return input;
 });
 
+/**
+ * Return length (count) of an object or an array
+ * @param {Object|Array} input
+ * @type {Number}
+ * @example {$vodka|length}
+ */
 smarty.addModifier('length', function(input){
 	if( smarty.utils.isString(input) || smarty.utils.isArray(input) )
 		return input.length;
@@ -1858,6 +1870,14 @@ smarty.addModifier('length', function(input){
 	return 0;
 });
 
+/**
+ * Returns substring from 'start' and to 'start' + 'length'
+ * @param {String}	input	Input string
+ * @param {Number}	start	Index to start from
+ * @param {Number}	length	Length of substring
+ * @type {String}
+ * @example {$matryoshka|substr:0:2}
+ */
 smarty.addModifier('substr', function(input, start, length){
 	if( !smarty.utils.isString(input) )
 		return '';
@@ -1865,6 +1885,12 @@ smarty.addModifier('substr', function(input, start, length){
 	return input.substr(start, length);
 });
 
+/**
+ * Returns string transformed to upper case
+ * @param {String} input	Origin string
+ * @type {String}
+ * @example {$shapkaUshanka|upper}
+ */
 smarty.addModifier('upper', function(input){
 	if( !smarty.utils.isString(input) )
 		return '';
@@ -1872,6 +1898,12 @@ smarty.addModifier('upper', function(input){
 	return input.toUpperCase();
 });
 
+/**
+ * Returns string transformed to lower case
+ * @param {String} input	Origin string
+ * @type {String}
+ * @example {$shapkaUshanka|lower}
+ */
 smarty.addModifier('lower', function(input){
 	if( !smarty.utils.isString(input) )
 		return '';
@@ -1879,6 +1911,13 @@ smarty.addModifier('lower', function(input){
 	return input.toLowerCase();
 });
 
+/**
+ * Returns origin string with appended 'value' at the end
+ * @param {String}	input	Origin string
+ * @param {String}	value	String to append
+ * @type {String}
+ * @example {$medvedi|cat:' on a becycle'}
+ */
 smarty.addModifier('cat', function(input, value){
 	if( !smarty.utils.isString(input) )
 		return '';
@@ -1886,6 +1925,12 @@ smarty.addModifier('cat', function(input, value){
 	return input + (value || '');
 });
 
+/**
+ * Replace '\n' with '<br />'
+ * @param {String} input	Origin string
+ * @type {String}
+ * @example {$babushka|nl2br}
+ */
 smarty.addModifier('nl2br', function(input){
 	if( !smarty.utils.isString(input) )
 		return '';
