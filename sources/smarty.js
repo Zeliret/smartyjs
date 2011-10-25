@@ -993,7 +993,7 @@
 			} catch( ex ){\
 				throw new smarty.Exception('Template runtime error: ' + ex.message);\
 			}", this._captureName, parsedTpl.join('') );			
-			console.log(codeStr);
+			//console.log(codeStr);
 			this._closure = Function(codeStr);	
 		},
 		
