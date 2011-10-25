@@ -475,15 +475,13 @@
 		}
 	};
 	
-	var templateIdCounter = 0;
-	
 	/**
 	 * Create template instance
 	 * @constructor
 	 * @param {String} name	Template name
 	 */
 	smarty.Template = function(name){
-		if( !name )
+		if( smarty.utils.isUndefined(name) || null === name || '' == ('' + name).trim() )
 			throw new smarty.Exception("Invalid template name '{0}'!", name);
 		
 		// If called without 'new' goto factory
@@ -1815,6 +1813,19 @@ smarty.addEntity('html_radios', {
 	start: function(expression){
 		// TODO: Implement it
 		return "";
+	}
+});
+
+smarty.addEntity('assign', {
+	attributes: {
+		_required: ['var', 'value'],
+		'var': [smarty.String],
+		value: [smarty.String, smarty.Variable, smarty.Number, smarty.Boolean]
+	},
+	start: function(expression){
+		var attr = expression.getAttributes();
+		
+		return smarty.utils.format("/* ASSIGN */ this.sv({0}, {1});", attr['var'], attr.value);
 	}
 });
 

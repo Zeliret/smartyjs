@@ -102,10 +102,10 @@ QUnit.test('Two or more modifiers', function(){
 });
 
 /*
- * Compilers
+ * Operators
  */
 
-QUnit.module('Compilers');
+QUnit.module('Operators');
 
 QUnit.test('If', function(){
 	tester('equal', [
@@ -145,6 +145,21 @@ QUnit.test('Foreach', function(){
 });
 
 /*
+ * Functions
+ */
+
+QUnit.module('Functions');
+
+QUnit.test('Assign', function(){
+	tester('equal', [
+		[ "{assign var='test' value='qwe'}{$test}", 'qwe' ],
+		[ "{assign var='test' value=123}{$test}", '123' ],
+		[ "{assign var='test' value=true}{$test}", 'true' ],
+		[ "{assign var='test' value='qwe'}{assign var='test2' value=$test|length}{$test2}", '3' ]
+		]);
+});
+
+/*
  * Special entities
  */
 
@@ -173,7 +188,7 @@ smarty.configure({
 });
 
 QUnit.test('Includes', function(){		
-	new smarty.Template('a').exec({}, function(result){
+	smarty.Template('a').exec({}, function(result){
 		QUnit.equal(result,	'a b c e d e');
 	});	
 });
