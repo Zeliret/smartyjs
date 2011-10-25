@@ -6,7 +6,7 @@
  * @copyright MegaGroup © 2011, megagroup.ru
  * @access public
  * @package Smarty.js
- * @version 1.0.0 beta
+ * @version 1.0.1
  * 
  * [~] - switched off, [-] - removed, [+] - added, [*] - modified 
  * 
