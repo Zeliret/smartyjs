@@ -410,11 +410,11 @@
 	smarty.CompileException = smarty.utils.inherit(smarty.Exception, smarty.CompileException = {
 		constructor: function(compiler){
 			if( !(compiler instanceof smarty.Compiler) )
-				throw new smarty.Exception("[compiler] must be type of [smarty.Compiler]!");
+				throw new smarty.Exception("[compiler] must be instance of [smarty.Compiler]!");
 			
 			this.name = 'Smarty.CompileException';
 			this.message = smarty.utils.format("[{0}:{1}] {2}", 
-				compiler.getTemplateName(), compiler.getLine() + 1,
+				compiler.getTemplate().getName(), compiler.getLine() + 1,
 				smarty.utils.format.apply(smarty.utils, Array.prototype.slice.call(arguments, 1)));			
 		}
 	});
@@ -513,7 +513,7 @@
 		// Template name
 		this._name = name;
 		// Template source
-		this._source = null;		
+		this._source = '';		
 		
 		this._closure = null;
 		this._includes = [];
@@ -648,14 +648,10 @@
 		 */
 		compile: function(source){
 			if( !source )
-				throw new smarty.Exception("Empty 'source' parameter!");
+				throw new smarty.Exception("Empty [source] parameter!");
 				
-			this._source = source;
-			
-			var compiler = new smarty.Compiler(this._name, this._source);	
-			this._closure = compiler.getClosure();
-			this._includes = compiler.getIncludes() || [];
-			this._dispatch();	
+			this._source = source;			
+			smarty.Compiler(this);	
 			
 			return this;
 		},
@@ -929,50 +925,46 @@
 	
 	/**
 	 * Compiler
-	 * @param {String} templateName	Template name
-	 * @param {String} source		Input template source
+	 * @param {smarty.Template} template	Template
 	 * @constructor
 	 */
-	smarty.Compiler = function(templateName, source){
-		this._source = source;	
-		this._templateName = templateName;
-		this._stack = [];
-		this._offset = 0;
-		this._data = {};
-		this._captureName = this.uniqueName('cap_');
+	smarty.Compiler = function(template){
+		if( !(this instanceof smarty.Compiler) ){
+			if( !(template instanceof smarty.Template) )
+				throw new smarty.Exception("[template] must be instance of [smarty.Template]!");
+			
+			var compiler = new smarty.Compiler();
+			compiler._template = template;
+			compiler._source = template.getSource();			
+			compiler._compile();
+			template.load(compiler._closure, compiler._includes);
+		} else {
+			this._template = null;
+			this._source = '';
+			this._stack = [];
+			this._offset = 0;
+			this._data = {};
+			this._captureName = this.uniqueName('cap_');
 		
-		this._closure = null;
-		this._line = 0;		
-		this._includes = [];
-		
-		this._compile();
+			this._closure = null;
+			this._line = 0;		
+			this._includes = [];
+		}		
 	};
 	
 	smarty.Compiler.prototype = {
 		constructor: smarty.Compiler,
 		
-		/**
-		 * Get compiled closure
-		 * @type {Function}
-		 */
-		getClosure: function(){
-			return this._closure;
-		},
-		
-		/**
-		 * Get array of includes
-		 * @type {Array}
-		 */
-		getIncludes: function(){
-			return this._includes;
-		},
-		
 		getLine: function(){
 			return this._line;
 		},
 		
-		getTemplateName: function(){
-			return this._templateName;
+		/**
+		 * Return assigned template object
+		 * @type {smarty.Template}
+		 */
+		getTemplate: function(){
+			return this._template;
 		},
 		
 		/**
@@ -1014,7 +1006,7 @@
 			} catch( ex ){\
 				throw new smarty.RuntimeException(ex.message);\
 			}", this._captureName, parsedTpl.join('') );			
-			//console.log(codeStr);
+			
 			this._closure = Function(codeStr);	
 		},
 		
