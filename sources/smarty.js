@@ -748,6 +748,16 @@
 		delete this.templates[name];
 	};
 	
+	/**
+	 * Always returns template object. 
+	 * If template isn't exists it will be created.
+	 * @param {String} name		Template name
+	 * @example 
+	 * smarty.Template.factory('a');
+	 * smarty.Template.factory('b', templateSource);
+	 * smarty.Template.factory('c', compiledClosure, arrayOfIncludes);
+	 * @type {smarty.Template}
+	 */
 	smarty.Template.factory = function(name){
 		var instance, source = arguments[1] || null;
 		if( smarty.Template.isExists(name) )
@@ -758,7 +768,7 @@
 		if( smarty.utils.isString(source) )
 			instance.compile(source);
 		else if( smarty.utils.isFunction(source) )
-			instance.load(source, arguments[2] || []);
+			instance.load(source, smarty.utils.isArray(arguments[2]) ? arguments[2] : []);
 			
 		return instance;
 	};
