@@ -473,7 +473,7 @@
 			}
 			return this;
 		}
-	}, includesTimeoutHandler = null;
+	};
 	
 	var templateIdCounter = 0;
 	
@@ -483,25 +483,13 @@
 	 * @param {String} name	Template name
 	 */
 	smarty.Template = function(name){
-		name || (name = 'tpl_'+ templateIdCounter++);
+		if( !name )
+			throw new smarty.Exception("Invalid template name '{0}'!", name);
 		
-		if( !(this instanceof smarty.Template) ){			
-			var instance, source = arguments[1] || null;
-			if( smarty.Template.isExists(name) )
-				instance = smarty.Template.get(name);
-			else
-				instance = new smarty.Template(name);
-			
-			if( smarty.utils.isString(source) )
-				instance.compile(source);
-			else if( smarty.utils.isFunction(source) )
-				instance.load(source, arguments[2] || []);
-			else 
-				throw new smarty.Exception("Invalid source type! Can't create instance of [smarty.Template]!");
-			
-			return instance;
-		}
-	
+		// If called without 'new' goto factory
+		if( !(this instanceof smarty.Template) )		
+			return smarty.Template.factory.apply(smarty.Template, arguments);
+
 		if( smarty.Template.isExists(name) )
 			throw new smarty.Exception("Template with name '{0}' already exists!", name);
 		
@@ -762,6 +750,20 @@
 		delete this.templates[name];
 	};
 	
+	smarty.Template.factory = function(name){
+		var instance, source = arguments[1] || null;
+		if( smarty.Template.isExists(name) )
+			instance = smarty.Template.get(name);
+		else
+			instance = new smarty.Template(name);
+			
+		if( smarty.utils.isString(source) )
+			instance.compile(source);
+		else if( smarty.utils.isFunction(source) )
+			instance.load(source, arguments[2] || []);
+			
+		return instance;
+	};
 	
 	/*******************************************************************
 	 *
