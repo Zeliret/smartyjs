@@ -401,19 +401,31 @@
 	 * @todo add parser pos
 	 */
 	smarty.Exception = smarty.utils.inherit(Error, smarty.Exception = {
-		constructor: function(ex){
-			this.name = 'SmartyException';
-
-			if( ex instanceof Error ){
-				this.message = ex.message;
-			} else {
-				this.message = smarty.utils.format("[{0}:{1}] {2} ", 
-					smarty.Template.current ? smarty.Template.current.getName() : '*',
-					smarty.Compiler.current ? smarty.Compiler.current.getLine() + 1 : 0,
-					smarty.utils.format.apply(smarty.utils, Array.prototype.slice.call(arguments)));
-			}			
+		constructor: function(){
+			this.name = 'Smarty.Exception';
+			this.message = smarty.utils.format.apply(smarty.utils, Array.prototype.slice.call(arguments));		
 		}
 	});
+	
+	smarty.CompileException = smarty.utils.inherit(smarty.Exception, smarty.CompileException = {
+		constructor: function(compiler){
+			if( !(compiler instanceof smarty.Compiler) )
+				throw new smarty.Exception("[compiler] must be type of [smarty.Compiler]!");
+			
+			this.name = 'Smarty.CompileException';
+			this.message = smarty.utils.format("[{0}:{1}] {2}", 
+				compiler.getTemplateName(), compiler.getLine() + 1,
+				smarty.utils.format.apply(smarty.utils, Array.prototype.slice.call(arguments, 1)));			
+		}
+	});
+	
+	smarty.RuntimeException = smarty.utils.inherit(smarty.Exception, smarty.RuntimeException = {
+		constructor: function(){
+			this.name = 'Smarty.RuntimeException';
+			this.message = smarty.utils.format.apply(smarty.utils, Array.prototype.slice.call(arguments));			
+		}
+	});
+	
 	// TODO: RuntimeException, ParserException
 	
 	/*******************************************************************
@@ -507,8 +519,6 @@
 		this._includes = [];
 		this._loadedIncludes = [];
 		this._includesMap = {};
-		
-		smarty.Template.current = this;
 		
 		return smarty.Template.set(this);
 	};
@@ -642,7 +652,7 @@
 				
 			this._source = source;
 			
-			var compiler = new smarty.Compiler(this._source);	
+			var compiler = new smarty.Compiler(this._name, this._source);	
 			this._closure = compiler.getClosure();
 			this._includes = compiler.getIncludes() || [];
 			this._dispatch();	
@@ -919,11 +929,13 @@
 	
 	/**
 	 * Compiler
-	 * @param {String} source	Input template source
+	 * @param {String} templateName	Template name
+	 * @param {String} source		Input template source
 	 * @constructor
 	 */
-	smarty.Compiler = function(source){
-		this._source = source;		
+	smarty.Compiler = function(templateName, source){
+		this._source = source;	
+		this._templateName = templateName;
 		this._stack = [];
 		this._offset = 0;
 		this._data = {};
@@ -932,8 +944,6 @@
 		this._closure = null;
 		this._line = 0;		
 		this._includes = [];
-		
-		smarty.Compiler.current = this;
 		
 		this._compile();
 	};
@@ -959,6 +969,10 @@
 		
 		getLine: function(){
 			return this._line;
+		},
+		
+		getTemplateName: function(){
+			return this._templateName;
 		},
 		
 		/**
@@ -987,7 +1001,7 @@
 			while( this._stack.length > 0 ){	
 				last = this._stack.pop();
 				if( last.entity.end )
-					throw new smarty.Exception("Unexpected close tag '/{0}'. Open tag specified at line {1}!", last.name, last.line);									
+					throw new smarty.CompileException(this, "Unexpected close tag '/{0}'. Open tag specified at line {1}!", last.name, last.line);									
 			}
 			
 			//window.console.log(parsedTpl);
@@ -998,7 +1012,7 @@
 				{1}\
 				return {0}.join('');\
 			} catch( ex ){\
-				throw new smarty.Exception('Template runtime error: ' + ex.message);\
+				throw new smarty.RuntimeException(ex.message);\
 			}", this._captureName, parsedTpl.join('') );			
 			//console.log(codeStr);
 			this._closure = Function(codeStr);	
@@ -1043,12 +1057,12 @@
 					if( name === '_required' ){
 						entity.attributes[name].forEach(function(require){
 							if( !(require in attributes) )
-								throw new smarty.Exception("Required attribute '{0}' not exists!", require);
+								throw new smarty.CompileException(this, "Required attribute '{0}' not exists!", require);
 						});	
 					} else if( attributes[name] ) {
 						var types = entity.attributes[name];
 						if( !smarty.utils.isArray(types) )
-							throw new smarty.Exception("Invalid attribute's meta definition!");	
+							throw new smarty.CompileException(this, "Invalid attribute's meta definition!");	
 						
 						var validType = false;
 						types.forEach(function(type){
@@ -1057,7 +1071,7 @@
 						});
 						
 						if( !validType )
-							throw new smarty.Exception("Invalid attribute type '{0}'!", name);
+							throw new smarty.CompileException(this, "Invalid attribute type '{0}'!", name);
 					}	
 					
 				return expression;
@@ -1099,16 +1113,16 @@
 								if( prev.name === entity.name ) // Invalid closing tag
 									break;	
 								
-								throw new smarty.Exception("Unexpected close tag '{0}'!", entity.name);
+								throw new smarty.CompileException(this, "Unexpected close tag '{0}'!", entity.name);
 							}								
 								
 							if( !prev ) // Not found closing tag
-								throw new smarty.Exception("Unexpected open tag '{0}'!", entity.name);
+								throw new smarty.CompileException(this, "Unexpected open tag '{0}'!", entity.name);
 								
 							// Push instructions in output array
 							result.push(entityData.end.call(this, prev.expression));
 						} else 
-							throw new smarty.Exception("Tag '{0}' hasn't need close tag!", entity.name);
+							throw new smarty.CompileException(this, "Tag '{0}' hasn't need close tag!", entity.name);
 					} else { // It is opening tag
 						if( entityData.depends.length ){ // Check function depending
 							var passed = false, i = this._stack.length;							
@@ -1117,7 +1131,7 @@
 									passed = true;
 							
 							if( !passed )
-								throw new smarty.Exception("Tag '{0}' must be specified within the following tags: '{1}'!", 
+								throw new smarty.CompileException(this, "Tag '{0}' must be specified within the following tags: '{1}'!", 
 									entity.name, 
 									entityData.depends);
 						}
@@ -1136,7 +1150,7 @@
 					}
 				}
 				else
-					throw new smarty.Exception("Undefined entity '{0}'!", entity.name);
+					throw new smarty.CompileException(this, "Undefined entity '{0}'!", entity.name);
 			}
 			
 			// Store input string tail
