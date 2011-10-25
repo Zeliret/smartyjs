@@ -939,16 +939,12 @@
 			compiler._compile();
 			template.load(compiler._closure, compiler._includes);
 		} else {
-			this._template = null;
+			this._template = this._closure = null;
 			this._source = '';
-			this._stack = [];
-			this._offset = 0;
+			this._stack = this._includes = [];
+			this._offset = this._line = 0;
 			this._data = {};
 			this._captureName = this.uniqueName('cap_');
-		
-			this._closure = null;
-			this._line = 0;		
-			this._includes = [];
 		}		
 	};
 	
