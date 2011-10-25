@@ -18,6 +18,8 @@ var data = {
 		e: 5
 	},
 	empty: {},
+	undefinedVar: undefined,
+	nullVar: null,
 	languages: {
 		worldDefault: 'english',
 		english: {
@@ -32,7 +34,8 @@ var data = {
 			learning: 'difficult',
 			country: 'Japan'
 		}
-	}
+	},
+	array: [ 'a', 'b', 'c' ]
 },
 testCaseCounter = 0,
 tester = function(testName, testSuite){
@@ -81,6 +84,7 @@ QUnit.module('Modifiers');
 QUnit.test('Simple modifiers', function(){		
 	tester('equal', [
 		[ "{$languages|length}", '4' ],
+		[ "{$array|length}", '3' ],
 		[ "{$languages.english.country|upper}", 'WORLD' ],
 		[ "{$languages.english.country|lower}", 'world' ],
 		]);
@@ -91,7 +95,15 @@ QUnit.test('Modifiers with params', function(){
 		[ "{$undefinedVar|default:'trololo'}", 'trololo' ],
 		[ "{$languages.english.learning|substr:2:3}", 'rma' ],		
 		[ "{$languages.english.learning|cat:' test'}", 'normal test' ],
-		[ "{$languages.english.learning|cat:'\'|:$'}", 'normal\'|:$' ]
+		[ "{$languages.english.learning|cat:'\'|:$'}", 'normal\'|:$' ],
+		[ "{$array|join:','}", 'a,b,c' ],
+		[ "{$array|join:','|split:','|length}", '3' ],
+		[ "{$array|empty}", 'false' ],
+		[ "{$empty|empty}", 'true' ],
+		[ "{$array|isset}", 'true' ],
+		[ "{$empty|isset}", 'true' ],
+		[ "{$undefinedVar|isset}", 'false' ],
+		[ "{$nullVar|isset}", 'false' ]
 		]);
 });
 

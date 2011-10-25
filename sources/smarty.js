@@ -1917,15 +1917,18 @@ smarty.addModifier('join', function(input, separator){
 });
 
 smarty.addModifier('isset', function(input){
-	return !smarty.modifiers.empty(input);
+	if( smarty.utils.isUndefined(input) || null === input )
+		return false;
+	
+	return true;
 });
 
 smarty.addModifier('empty', function(input){
-	if( smarty.utils.isUndefined(input) || null === input || false == input )
+	if( !input )
 		return true;
 
 	if( smarty.utils.isArray(input) || smarty.utils.isObject(input) )
-		return smarty.utils.count(input) > 0;			
+		return smarty.utils.count(input) === 0;			
 	
 	return false;
 });
