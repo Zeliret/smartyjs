@@ -119,6 +119,11 @@
 		modifiers: {},
 		settings: {},
 		
+		/**
+		 * Configure smarty library
+		 * @param {Object} settings		Configuration settings
+		 * @type {smarty}
+		 */
 		configure: function(settings){
 			this.settings = smarty.utils.extend({
 				isDebug: false,
@@ -127,6 +132,8 @@
 				},
 				includeTimeout: 3000
 			}, settings || {}); 
+			
+			return this;
 		},
 
 		/**
@@ -203,7 +210,7 @@
 				throw new this.Exception("Callback [options.end] must be callable or [undefined]!");
 		
 			if( !this.utils.isArray(options.after) || !this.utils.isArray(options.depends) )
-				throw new this.Exception("[options.after] and 'options.depends' must be an [Array]!");
+				throw new this.Exception("[options.after] and [options.depends] must be an [Array]!");
 			
 			if( !this.utils.isObject(options.attributes) )
 				throw new this.Exception("[options.attributes] must be an [Object]!");
@@ -1567,7 +1574,7 @@
 *******************************************************************/
 
 /*
- * COMPILERS
+ * OPERATORS
  */
 
 /*
@@ -1865,19 +1872,10 @@ smarty.addModifier('default', function(input, value){
  * @example {$vodka|length}
  */
 smarty.addModifier('length', function(input){
-	if( smarty.utils.isString(input) || smarty.utils.isArray(input) )
+	if( smarty.utils.isString(input) )
 		return input.length;
 	
-	if( smarty.utils.isObject(input) ){
-		var length = 0;
-		for( var n in input )
-			if( input.hasOwnProperty(n) )
-				length++;
-		
-		return length;
-	}
-	
-	return 0;
+	return smarty.utils.count(input);
 });
 
 /**
