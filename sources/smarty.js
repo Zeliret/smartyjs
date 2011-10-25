@@ -1780,7 +1780,7 @@ smarty.addEntity('include', {
 		else
 			result += smarty.utils.format("{0}.push(this.inc({1}));", this._captureName, attr.file);
 			
-		return result += smarty.utils.format("this.en({0});", attr.file);
+		return result += smarty.utils.format("this.en({0}); /* ENDINCLUDE */", attr.file);
 	}
 });
 
@@ -1825,7 +1825,7 @@ smarty.addEntity('assign', {
 	start: function(expression){
 		var attr = expression.getAttributes();
 		
-		return smarty.utils.format("/* ASSIGN */ this.sv({0}, {1});", attr['var'], attr.value);
+		return smarty.utils.format("/* ASSIGN */ this.sv({0}, {1}); /* ENDASSIGN */", attr['var'], attr.value);
 	}
 });
 
