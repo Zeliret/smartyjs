@@ -939,10 +939,13 @@
 			compiler._compile();
 			template.load(compiler._closure, compiler._includes);
 		} else {
-			this._template = this._closure = null;
+			this._template = null;
+			this._closure = null;
 			this._source = '';
-			this._stack = this._includes = [];
-			this._offset = this._line = 0;
+			this._stack = [];
+			this._includes = [];
+			this._offset = 0;
+			this._line = 0;
 			this._data = {};
 			this._captureName = this.uniqueName('cap_');
 		}		
@@ -1125,7 +1128,7 @@
 						}
 						
 						var expression = processExpression(entityData, entity.body);
-
+						
 						this._stack.push({
 							name: entity.name,		
 							body: entity.body,	
@@ -1989,7 +1992,31 @@ smarty.addModifier('empty', function(input){
 });
 
 smarty.addModifier('escape', function(input, type){
-	// TODO: Implement
+	switch( type ){
+		case 'html':
+			var div = document.createElement('div'), text = document.createTextNode(input);
+			div.appendChild(text);
+			input = div.innerHTML;		
+			break;
+		case 'url':
+			input = encodeURI(input);
+			break;
+		case 'urlpathinfo':
+			input = encodeURI(input).replace('%2F', '/');
+			break;
+		case 'quotes':
+			input = input.replace(/(['"])/g, "\\$1");
+			break;
+		case 'hex':
+			break;
+		case 'hexentity':
+			break;
+		case 'javascript':
+			break;
+		case 'mail':
+			break;
+	}
+	
 	return input;
 });
 

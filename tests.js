@@ -35,7 +35,10 @@ var data = {
 			country: 'Japan'
 		}
 	},
-	array: [ 'a', 'b', 'c' ]
+	array: [ 'a', 'b', 'c' ],
+	unescaped: {
+		quotes: "qwe' qwe\' qwe\\'"
+	}
 },
 testCaseCounter = 0,
 tester = function(testName, testSuite){
@@ -104,6 +107,12 @@ QUnit.test('Modifiers with params', function(){
 		[ "{$empty|isset}", 'true' ],
 		[ "{$undefinedVar|isset}", 'false' ],
 		[ "{$nullVar|isset}", 'false' ]
+		]);
+});
+
+QUnit.test('Escape modifier', function(){		
+	tester('equal', [
+		[ "{$unescaped.quotes|escape:'quotes'}", "qwe\\\' qwe\\\' qwe\\\\\'" ]
 		]);
 });
 
