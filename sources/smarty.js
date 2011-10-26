@@ -1992,7 +1992,7 @@ smarty.addModifier('empty', function(input){
 });
 
 smarty.addModifier('escape', function(input, type){
-	switch( type ){
+	switch( '' + type ){
 		case 'html':
 			var div = document.createElement('div'), text = document.createTextNode(input);
 			div.appendChild(text);
