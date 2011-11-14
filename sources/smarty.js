@@ -391,6 +391,46 @@
 	
 	/*******************************************************************
 	 *
+	 * Debugger
+	 * 
+	 *******************************************************************/
+	
+	smarty.debug = {
+		_isGroup: false,
+		_canDebug: function(){
+			return smarty.settings.isDebug && window.console;
+		},
+		
+		_formatMessage: function(msg){
+			var date = new Date(), time = {
+				h: date.getHours(),
+				m: date.getMinutes(),
+				s: date.getSeconds(),
+				ms: date.getMilliseconds()
+			};
+			
+			return smarty.utils.format("[DEBUG] {0}:{1}:{2}.{3}\t{4}", time.h, time.m, time.s, time.ms, msg);
+		},
+		
+		log: function(){
+			var formattedMsg = smarty.utils.format.apply(smarty.utils, arguments);
+			return this._canDebug() && console.log(this._isGroup ? formattedMsg : this._formatMessage(formattedMsg)), this;
+		},
+		
+		group: function(title, isCollapsed){
+			var formattedTitle = this._formatMessage(title);
+			this._isGroup = true;
+			return this._canDebug() && (isCollapsed ? console.groupCollapsed(formattedTitle) : console.group(formattedTitle)), this;
+		},
+		
+		groupEnd: function(){
+			this._isGroup = false;
+			return this._canDebug() && console.groupEnd(), this;
+		}
+	};
+	
+	/*******************************************************************
+	 *
 	 * Exception class
 	 * 
 	 *******************************************************************/
@@ -1007,6 +1047,11 @@
 			}", this._captureName, parsedTpl.join('') );			
 			
 			this._closure = Function(codeStr);	
+			
+			smarty.debug
+			.group('Compiled source: ' + this.getTemplate().getName(), true)
+			.log(this._closure.toString())
+			.groupEnd();
 		},
 		
 		/**
