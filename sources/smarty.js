@@ -2020,4 +2020,4 @@ smarty.addModifier('escape', function(input, type){
 	return input;
 });
 
-// TODO strtotime, date_format, escape
+// TODO strtotime, date_format
