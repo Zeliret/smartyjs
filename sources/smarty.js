@@ -16,6 +16,8 @@
  * 
  * @todo Parser exceptions with position
  * @todo Parser support for screened quotes
+ * @todo Parsing expression into indexed array
+ * @todo Custom user functions
  */
 
 (function(window){
