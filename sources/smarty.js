@@ -1013,7 +1013,7 @@
 		 */
 		_compile: function(){			
 			// Remove comments
-			var template = this._source.replace(/{\*[\d\D]*?\*}/g, function(full){
+			var template = this._source.replace(/\r/g, '').replace(/{\*[\d\D]*?\*}/g, function(full){
 				this._offset += full.split('\n').length - 1;
 				return '';
 			}.bind(this)).split('\n');
@@ -1046,7 +1046,7 @@
 				return {0}.join('');\
 			} catch( ex ){\
 				throw new smarty.RuntimeException(ex.message);\
-			}", this._captureName, parsedTpl.join('') );			
+			}", this._captureName, parsedTpl.join('\n') );			
 			
 			this._closure = Function(codeStr);	
 			
