@@ -1380,7 +1380,7 @@
 				NAME: 0x1,
 				COLON: 0x2,
 				PARAM: 0x3
-			}, state = states.NAME, name = '', param = '', params = [];
+			}, state = states.NAME, name = '', param = null, params = [];
 			
 				cycle: while( (ch = this._next()) ){
 					switch( true ){	
@@ -1418,7 +1418,10 @@
 							name += ch;
 							break;
 						case states.COLON:
-							param.length && params.push(param) && (param = '');
+							if( null !== param )
+								params.push(param) && (param = '');
+							else
+								param = '';
 							break;
 						case states.PARAM:
 							param += ch;
@@ -1426,7 +1429,7 @@
 					}				
 				}	
 			
-			param.length && params.push(param);
+			null !== param && params.push(param);
 			
 			if( !(name in smarty.modifiers) )
 				throw new smarty.Exception("Undefined modifier '{0}'!", name);
