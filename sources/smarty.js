@@ -1419,9 +1419,9 @@
 							break;
 						case states.COLON:
 							if( null !== param )
-								params.push(param) && (param = '');
-							else
-								param = '';
+								params.push(param);
+							
+							param = '';
 							break;
 						case states.PARAM:
 							param += ch;
