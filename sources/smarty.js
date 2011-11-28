@@ -119,7 +119,13 @@
 	var smarty = {
 		entities: {},
 		modifiers: {},
-		settings: {},
+		settings: {
+			isDebug: false,
+			includeHandler: function(){
+				throw new smarty.Exception("Method isn't implemented yet!");
+			},
+			includeTimeout: 3000
+		},
 		
 		/**
 		 * Configure smarty library
@@ -127,13 +133,7 @@
 		 * @type {smarty}
 		 */
 		configure: function(settings){
-			this.settings = smarty.utils.extend({
-				isDebug: false,
-				includeHandler: function(){
-					throw new smarty.Exception("Method isn't implemented yet!");
-				},
-				includeTimeout: 3000
-			}, settings || {}); 
+			this.settings = smarty.utils.extend(this.settings, settings || {}); 
 			
 			return this;
 		},
@@ -1113,7 +1113,7 @@
 					}	
 					
 				return expression;
-			};
+			}.bind(this);
 			
 			// Iterate over string with regular expression
 			while( null !== (match = /{([$\/])?([\w][\w\d]*)([^}]*)}/.exec(string)) ){

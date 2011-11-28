@@ -55,6 +55,14 @@ tester = function(testName, testSuite){
 };
 
 /*
+ * Smarty setup
+ */
+
+smarty.configure({
+	isDebug: true
+});
+
+/*
  * Variables tests
  */
 
