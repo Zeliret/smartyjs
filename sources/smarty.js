@@ -456,7 +456,7 @@
 			
 			this.name = 'Smarty.CompileException';
 			this.message = smarty.utils.format("[{0}:{1}] {2}", 
-				compiler.getTemplate().getName(), compiler.getLine() + 1,
+				compiler.getTemplate().getName(), compiler.getLine(),
 				smarty.utils.format.apply(smarty.utils, Array.prototype.slice.call(arguments, 1)));			
 		}
 	});
@@ -986,8 +986,7 @@
 			this._source = '';
 			this._stack = [];
 			this._includes = [];
-			this._offset = 0;
-			this._line = 0;
+			this._line = 1;
 			this._data = {};
 			this._captureName = this.uniqueName('cap_');
 		}		
@@ -1014,18 +1013,15 @@
 		_compile: function(){			
 			// Remove comments
 			var template = this._source.replace(/\r/g, '').replace(/{\*[\d\D]*?\*}/g, function(full){
-				this._offset += full.split('\n').length - 1;
-				return '';
+				var count = full.split('\n').length - 1;
+				return '{@comment ' + count + '}';
 			}.bind(this)).split('\n');
-			
-			// Store current template line
-			this._line = this._offset;
 			
 			var	parsedTpl = [];
 			// Iterate over template array and parse strings
-			template.forEach(function(string){
+			template.forEach(function(string){				
 				var parsedString = this._compileString(string);
-				parsedTpl.push(parsedString);
+				parsedTpl.push(parsedString);			
 				this._line++;
 			}, this);				
 			
@@ -1034,7 +1030,7 @@
 			while( this._stack.length > 0 ){	
 				last = this._stack.pop();
 				if( last.entity.end )
-					throw new smarty.CompileException(this, "Unexpected close tag '/{0}'. Open tag specified at line {1}!", last.name, last.line);									
+					throw new smarty.CompileException(this, "Open tag '{0}' at line {1} doesn't have close tag!", last.name, last.line);									
 			}
 			
 			//window.console.log(parsedTpl);
@@ -1096,7 +1092,7 @@
 						entity.attributes[name].forEach(function(require){
 							if( !(require in attributes) )
 								throw new smarty.CompileException(this, "Required attribute '{0}' not exists!", require);
-						});	
+						}.bind(this));	
 					} else if( attributes[name] ) {
 						var types = entity.attributes[name];
 						if( !smarty.utils.isArray(types) )
@@ -1116,7 +1112,7 @@
 			}.bind(this);
 			
 			// Iterate over string with regular expression
-			while( null !== (match = /{([$\/])?([\w][\w\d]*)([^}]*)}/.exec(string)) ){
+			while( null !== (match = /{([$\/@])?([\w][\w\d]*)([^}]*)}/.exec(string)) ){
 				// Define entity object
 				var entity = {
 					full: match[0],
@@ -1135,6 +1131,9 @@
 				if( entity.typeBit === '$' ){					
 					entity.body = 'variable=' + entity.typeBit + entity.name + entity.body;
 					entity.name = 'var';
+				} else if ( entity.typeBit === '@' ) {	// System token
+					if( entity.name === 'comment' )
+						return this._line += parseInt(entity.body), '';
 				}
 								
 				var entityData = smarty.entities[entity.name];
@@ -1143,26 +1142,26 @@
 				if( entityData ) { // Function exists							
 					if( entity.typeBit === '/' ) { // It is closing tag		
 						if( entityData.end ) {	// Function requires closing tag							
-							var prev;
+							var prev, passed = false;
 							while( (prev = this._stack.pop()) ){
 								if( !prev.entity.end )
 									continue;
 
-								if( prev.name === entity.name ) // Invalid closing tag
+								if( prev.name === entity.name ){
+									passed = true;
 									break;	
-								
-								throw new smarty.CompileException(this, "Unexpected close tag '{0}'!", entity.name);
+								}
 							}								
 								
-							if( !prev ) // Not found closing tag
-								throw new smarty.CompileException(this, "Unexpected open tag '{0}'!", entity.name);
+							if( !passed ) // Not found open tag
+								throw new smarty.CompileException(this, "Unexpected close tag '{0}'!", entity.name);
 								
 							// Push instructions in output array
 							result.push(entityData.end.call(this, prev.expression));
 						} else 
 							throw new smarty.CompileException(this, "Tag '{0}' hasn't need close tag!", entity.name);
 					} else { // It is opening tag
-						if( entityData.depends.length ){ // Check function depending
+						if( entityData.depends.length ){ // Check function dependency
 							var passed = false, i = this._stack.length;							
 							while( !passed && i > 0 )
 								if( entityData.depends.indexOf(this._stack[--i].name) >= 0 )
@@ -1175,13 +1174,12 @@
 						}
 						
 						var expression = processExpression(entityData, entity.body);
-						
 						this._stack.push({
 							name: entity.name,		
 							body: entity.body,	
 							expression: expression,
 							entity: entityData,				
-							line: this._line	
+							line: this._line
 						});
 							
 						result.push(entityData.start.call(this, expression));
