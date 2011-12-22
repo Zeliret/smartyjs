@@ -116,7 +116,7 @@
 	 * 
 	 *******************************************************************/
 	
-	var smarty = {
+	var smarty = window['smarty'] = {
 		entities: {},
 		modifiers: {},
 		settings: {
@@ -1615,8 +1615,6 @@
 			return child;
 		};
 	});
-	
-	window.smarty = smarty;
 	
 })(window);
 
