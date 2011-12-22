@@ -883,7 +883,7 @@
 			var ns, i = this._namespaces.length;
 			while( i --> 0 ){
 				ns = this._namespaces[i];
-				if( this._localVars[ns].hasOwnProperty(first) ){
+				if( this._localVars[ns] && this._localVars[ns].hasOwnProperty(first) ){
 					result = evaluator(this._localVars[ns][first]);
 					break;
 				}
