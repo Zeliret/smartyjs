@@ -1,6 +1,6 @@
 
 /**
- * Smarty templater
+ * @preserve Smarty templater
  *
  * @author Artem Shalaev <artem.shalaev@gmail.com>, Sep 27, 2011 1:51:28 PM
  * @copyright MegaGroup © 2011, megagroup.ru
@@ -23,7 +23,7 @@
 (function(window){
 	'use strict';
 	
-	if( void 0 !== window.smarty )
+	if( void 0 !== smarty )
 		return;
 	
 	/*******************************************************************
@@ -1626,103 +1626,106 @@
 * 
 *******************************************************************/
 
-/*
- * OPERATORS
- */
-
-/*
- * SYSTEM: var
- */
-smarty.addEntity('var', {
-	attributes: {
-		_required: ['variable'],
-		variable: [smarty.Variable]
-	},
-	start: function(expression){
-		var attr = expression.getAttributes();
-		return smarty.utils.format('{0}.push({1});', this._captureName, attr.variable);
-	}
-});
-
-/*
- * IF operator
- */
-smarty.addEntity('if', {
-	start: function(expression){
-		return smarty.utils.format("/* IF */ if({0}){", expression);
-	},
+(function(window){
+	var smarty = window.smarty;
 	
-	end: function(){
-		return '} /* ENDIF */';
-	}
-});
+	/*
+	 * OPERATORS
+	 */
 
-/*
- * ELSE operator
- */
-smarty.addEntity('else', {
-	start: function(){
-		return '} /* ELSE */ else{';
-	},
-	after: ['elseif'],
-	depends: ['if']
-});
+	/*
+	 * SYSTEM: var
+	 */
+	smarty.addEntity('var', {
+		attributes: {
+			_required: ['variable'],
+			variable: [smarty.Variable]
+		},
+		start: function(expression){
+			var attr = expression.getAttributes();
+			return smarty.utils.format('{0}.push({1});', this._captureName, attr.variable);
+		}
+	});
 
-/*
- * ELSEIF operator
- */
-smarty.addEntity('elseif', {
-	start: function(expression){
-		return smarty.utils.format("} /* ELSEIF */ else if({0}){", expression);
-	},
-	depends: ['if']
-});
+	/*
+	 * IF operator
+	 */
+	smarty.addEntity('if', {
+		start: function(expression){
+			return smarty.utils.format("/* IF */ if({0}){", expression);
+		},
+	
+		end: function(){
+			return '} /* ENDIF */';
+		}
+	});
 
-/*
- * BREAK operator
- */
-smarty.addEntity('break', {
-	start: function(){
-		return '/* BREAK */ break;'
-	},
-	depends: ['foreach', 'while']
-});
+	/*
+	 * ELSE operator
+	 */
+	smarty.addEntity('else', {
+		start: function(){
+			return '} /* ELSE */ else{';
+		},
+		after: ['elseif'],
+		depends: ['if']
+	});
 
-/*
- * CONTINUE operator
- */
-smarty.addEntity('continue', {
-	start: function(){
-		return '/* CONTINUE */ continue;'
-	},
-	depends: ['foreach', 'while']
-});
+	/*
+	 * ELSEIF operator
+	 */
+	smarty.addEntity('elseif', {
+		start: function(expression){
+			return smarty.utils.format("} /* ELSEIF */ else if({0}){", expression);
+		},
+		depends: ['if']
+	});
 
-/*
- * FOREACH operator
- */
-smarty.addEntity('foreach', {
-	attributes: {
-		_required: ['from', 'item'],
-		from: [smarty.Variable],
-		item: [smarty.String],
-		key: [smarty.String],
-		name: [smarty.String]
-	},
-	start: function(expression){
-		var attr = expression.getAttributes();
+	/*
+	 * BREAK operator
+	 */
+	smarty.addEntity('break', {
+		start: function(){
+			return '/* BREAK */ break;'
+		},
+		depends: ['foreach', 'while']
+	});
+
+	/*
+	 * CONTINUE operator
+	 */
+	smarty.addEntity('continue', {
+		start: function(){
+			return '/* CONTINUE */ continue;'
+		},
+		depends: ['foreach', 'while']
+	});
+
+	/*
+	 * FOREACH operator
+	 */
+	smarty.addEntity('foreach', {
+		attributes: {
+			_required: ['from', 'item'],
+			from: [smarty.Variable],
+			item: [smarty.String],
+			key: [smarty.String],
+			name: [smarty.String]
+		},
+		start: function(expression){
+			var attr = expression.getAttributes();
 		
-		this._data.foreachMeta = this.uniqueName();
+			this._data.foreachMeta = this.uniqueName();
 		
-		var obj = this.uniqueName(), key = this.uniqueName(), ns = this.uniqueName('ns_'),
-		result = smarty.utils.format("/* FOREACH */\
+			var obj = this.uniqueName(), key = this.uniqueName(), ns = this.uniqueName('ns_'),
+			result = smarty.utils.format("/* FOREACH */\
 			var {0} = {1}, {2} = { key: null, iteration: 0 };\
 			this.sn('{3}');", obj, attr.from, this._data.foreachMeta, ns);
 		
-		if( attr.name )
-			result += smarty.utils.format("this.sv({0}, {1});", attr.name, this._data.foreachMeta);
+			if( attr.name )
+				result += smarty.utils.format("this.sv({0}, {1});", attr.name, this._data.foreachMeta);
 				
-		result += smarty.utils.format("\
+			result += smarty.utils.format("\
 			if( smarty.utils.isObject({1}) || smarty.utils.isArray({1}) )\
 				for(var {0} in {1}){\
 					if(!{1}.hasOwnProperty({0})) continue;\
@@ -1730,342 +1733,343 @@ smarty.addEntity('foreach', {
 						key: {0}\
 					});\
 					this.sv({3}, {1}[{0}]);",			
-			key, obj, this._data.foreachMeta, attr.item );
+				key, obj, this._data.foreachMeta, attr.item );
 			
-		if( attr.key )
-			result += smarty.utils.format("this.sv({0}, {1});", attr.key, key);
+			if( attr.key )
+				result += smarty.utils.format("this.sv({0}, {1});", attr.key, key);
 		
-		return result;
-	},
-	end: function() {
-		return "}this.en(); /* ENDFOREACH */";
-	}
-});
+			return result;
+		},
+		end: function() {
+			return "}this.en(); /* ENDFOREACH */";
+		}
+	});
 
-/*
- * FOREACHELSE operator
- */
-smarty.addEntity('foreachelse', {
-	start: function(){
-		return smarty.utils.format("} /* FOREACHELSE */ if({0}.iteration === 0){", this._data.foreachMeta);
-	},
-	depends: ['foreach']
-});
+	/*
+	 * FOREACHELSE operator
+	 */
+	smarty.addEntity('foreachelse', {
+		start: function(){
+			return smarty.utils.format("} /* FOREACHELSE */ if({0}.iteration === 0){", this._data.foreachMeta);
+		},
+		depends: ['foreach']
+	});
 
-/*
- * FOR operator
- */
+	/*
+	 * FOR operator
+	 */
 
-smarty.addEntity('for', {
-	attributes: {
-		_required: ['from', 'to'],
-		from: [smarty.Variable, smarty.Number],
-		to: [smarty.Variable, smarty.Number],
-		step: [smarty.Variable, smarty.Number],
-		name: [smarty.String]
-	},
-	start: function(expression){
-		var attr = expression.getAttributes();
+	smarty.addEntity('for', {
+		attributes: {
+			_required: ['from', 'to'],
+			from: [smarty.Variable, smarty.Number],
+			to: [smarty.Variable, smarty.Number],
+			step: [smarty.Variable, smarty.Number],
+			name: [smarty.String]
+		},
+		start: function(expression){
+			var attr = expression.getAttributes();
 		
 		
-		var meta = this.uniqueName(), ns = this.uniqueName('ns_'), start = this.uniqueName(), end = this.uniqueName(),		
-		result = smarty.utils.format("/* FOR */\
+			var meta = this.uniqueName(), ns = this.uniqueName('ns_'), start = this.uniqueName(), end = this.uniqueName(),		
+			result = smarty.utils.format("/* FOR */\
 			var {0} = { index: 0, iteration: 0 };\
 			this.sn('{1}');", meta, ns);
 		
-		if( attr.name )
-			result += smarty.utils.format("this.sv({0}, {1});", attr.name, meta);
+			if( attr.name )
+				result += smarty.utils.format("this.sv({0}, {1});", attr.name, meta);
 		
-		result += smarty.utils.format("for(var {0} = {1}, {2} = {3}; {0} <= {2}; {0} += {4}){\
+			result += smarty.utils.format("for(var {0} = {1}, {2} = {3}; {0} <= {2}; {0} += {4}){\
 			{5}.iteration++, smarty.utils.extend({5}, { index: {0} });", start, attr.from, end, attr.to, attr.step || 1, meta);
 		
-		return result;
-	},
-	end: function(){
-		return "}this.en(); /* ENDFOR */";
-	}
-});
+			return result;
+		},
+		end: function(){
+			return "}this.en(); /* ENDFOR */";
+		}
+	});
 
-/*
- * WHILE operator
- */
-smarty.addEntity('while', {
-	start: function(expression){
-		return smarty.utils.format("/* WHILE */ while({0}){", expression);
-	},
-	end: function(){
-		return "} /* ENDWHILE */";
-	}
-});
+	/*
+	 * WHILE operator
+	 */
+	smarty.addEntity('while', {
+		start: function(expression){
+			return smarty.utils.format("/* WHILE */ while({0}){", expression);
+		},
+		end: function(){
+			return "} /* ENDWHILE */";
+		}
+	});
 
-/*
- * CAPTURE operator
- */
-smarty.addEntity('capture', {
-	attributes: {
-		_required: ['assign'],
-		assign: [smarty.String]
-	},
-	start: function(){
-		this._data.captureName = this.uniqueName('cap_');	
-		this._data.oldCaptureName = this._captureName;
-		this._captureName = this._data.captureName;
+	/*
+	 * CAPTURE operator
+	 */
+	smarty.addEntity('capture', {
+		attributes: {
+			_required: ['assign'],
+			assign: [smarty.String]
+		},
+		start: function(){
+			this._data.captureName = this.uniqueName('cap_');	
+			this._data.oldCaptureName = this._captureName;
+			this._captureName = this._data.captureName;
 		
-		return smarty.utils.format("/* CAPTURE */ var {0} = [];", this._data.captureName);	
-	},
+			return smarty.utils.format("/* CAPTURE */ var {0} = [];", this._data.captureName);	
+		},
 	
-	end: function(expression){
-		var attr = expression.getAttributes();		
-		this._captureName = this._data.oldCaptureName;
+		end: function(expression){
+			var attr = expression.getAttributes();		
+			this._captureName = this._data.oldCaptureName;
 		
-		return smarty.utils.format("this.sv({0}, {1}); /* ENDCAPTURE */", attr.assign, this._data.captureName);
-	}
-});
+			return smarty.utils.format("this.sv({0}, {1}); /* ENDCAPTURE */", attr.assign, this._data.captureName);
+		}
+	});
 
-/*
- * FUNCTIONS
- */
+	/*
+	 * FUNCTIONS
+	 */
 
-/*
- * INCLUDE function
- */
-smarty.addEntity('include', {
-	attributes: {
-		_required: ['file'],
-		file: [smarty.String, smarty.Variable],
-		assign: [smarty.String]
-	},
-	start: function(expression){
-		var attr = expression.getAttributes();
+	/*
+	 * INCLUDE function
+	 */
+	smarty.addEntity('include', {
+		attributes: {
+			_required: ['file'],
+			file: [smarty.String, smarty.Variable],
+			assign: [smarty.String]
+		},
+		start: function(expression){
+			var attr = expression.getAttributes();
 		
-		this._includes.push(attr.file.value);
+			this._includes.push(attr.file.value);
 		
-		var result = smarty.utils.format("/* INCLUDE */ this.sn({0});", attr.file);		
-		for( var key in attr )
-			if( attr.hasOwnProperty(key) && !(key in smarty.entities['include'].attributes) )
-				result += smarty.utils.format("this.sv('{0}', {1});", key, attr[key]);
+			var result = smarty.utils.format("/* INCLUDE */ this.sn({0});", attr.file);		
+			for( var key in attr )
+				if( attr.hasOwnProperty(key) && !(key in smarty.entities['include'].attributes) )
+					result += smarty.utils.format("this.sv('{0}', {1});", key, attr[key]);
 		
-		if( attr.assign )	
-			result += smarty.utils.format("this.sv({0}, this.inc({1}));", attr.assign, attr.file);
-		else
-			result += smarty.utils.format("{0}.push(this.inc({1}));", this._captureName, attr.file);
+			if( attr.assign )	
+				result += smarty.utils.format("this.sv({0}, this.inc({1}));", attr.assign, attr.file);
+			else
+				result += smarty.utils.format("{0}.push(this.inc({1}));", this._captureName, attr.file);
 			
-		return result += smarty.utils.format("this.en({0}); /* ENDINCLUDE */", attr.file);
-	}
-});
+			return result += smarty.utils.format("this.en({0}); /* ENDINCLUDE */", attr.file);
+		}
+	});
 
-smarty.addEntity('dump', {
-	start: function(expression){
-		return smarty.utils.format("console.log({0});", expression);
-	}
-});
+	smarty.addEntity('dump', {
+		start: function(expression){
+			return smarty.utils.format("console.log({0});", expression);
+		}
+	});
 
-smarty.addEntity('html_options', {
-	attributes: {
-		_required: ['options'],
-		options: [smarty.Variable],
-		selected: [smarty.String, smarty.Variable]
-	},
-	start: function(expression){
-		// TODO: Implement it
-		return "";
-	}
-});
+	smarty.addEntity('html_options', {
+		attributes: {
+			_required: ['options'],
+			options: [smarty.Variable],
+			selected: [smarty.String, smarty.Variable]
+		},
+		start: function(expression){
+			// TODO: Implement it
+			return "";
+		}
+	});
 
-smarty.addEntity('html_radios', {
-	attributes: {
-		_required: ['options'],
-		options: [smarty.Variable],
-		selected: [smarty.String, smarty.Variable],
-		separator: [smarty.String, smarty.Variable],
-		name: [smarty.String]
-	},
-	start: function(expression){
-		// TODO: Implement it
-		return "";
-	}
-});
+	smarty.addEntity('html_radios', {
+		attributes: {
+			_required: ['options'],
+			options: [smarty.Variable],
+			selected: [smarty.String, smarty.Variable],
+			separator: [smarty.String, smarty.Variable],
+			name: [smarty.String]
+		},
+		start: function(expression){
+			// TODO: Implement it
+			return "";
+		}
+	});
 
-smarty.addEntity('assign', {
-	attributes: {
-		_required: ['var', 'value'],
-		'var': [smarty.String],
-		value: [smarty.String, smarty.Variable, smarty.Number, smarty.Boolean]
-	},
-	start: function(expression){
-		var attr = expression.getAttributes();
+	smarty.addEntity('assign', {
+		attributes: {
+			_required: ['var', 'value'],
+			'var': [smarty.String],
+			value: [smarty.String, smarty.Variable, smarty.Number, smarty.Boolean]
+		},
+		start: function(expression){
+			var attr = expression.getAttributes();
 		
-		return smarty.utils.format("/* ASSIGN */ this.sv({0}, {1}); /* ENDASSIGN */", attr['var'], attr.value);
-	}
-});
+			return smarty.utils.format("/* ASSIGN */ this.sv({0}, {1}); /* ENDASSIGN */", attr['var'], attr.value);
+		}
+	});
 
-/*******************************************************************
-*
-* Modifiers
-* 
-*******************************************************************/
+	/*******************************************************************
+	*
+	* Modifiers
+	* 
+	*******************************************************************/
 
-/**
- * Return default value if var is empty
- * @param {Object}	input	Origin variable value
- * @param {String}	value	Default variable value if its empty
- * @example {$balalaika|default:'broken'}
- */
-smarty.addModifier('default', function(input, value){
-	if( smarty.modifiers.empty(input) )
-		return value;
+	/**
+	 * Return default value if var is empty
+	 * @param {Object}	input	Origin variable value
+	 * @param {String}	value	Default variable value if its empty
+	 * @example {$balalaika|default:'broken'}
+	 */
+	smarty.addModifier('default', function(input, value){
+		if( smarty.modifiers.empty(input) )
+			return value;
 	
-	return input;
-});
+		return input;
+	});
 
-/**
- * Return length (count) of an object or an array
- * @param {Object|Array} input
- * @type {Number}
- * @example {$vodka|length}
- */
-smarty.addModifier('length', function(input){
-	if( smarty.utils.isString(input) )
-		return input.length;
+	/**
+	 * Return length (count) of an object or an array
+	 * @param {Object|Array} input
+	 * @type {Number}
+	 * @example {$vodka|length}
+	 */
+	smarty.addModifier('length', function(input){
+		if( smarty.utils.isString(input) )
+			return input.length;
 	
-	return smarty.utils.count(input);
-});
+		return smarty.utils.count(input);
+	});
 
-/**
- * Returns substring from 'start' and to 'start' + 'length'
- * @param {String}	input	Input string
- * @param {Number}	start	Index to start from
- * @param {Number}	length	Length of substring
- * @type {String}
- * @example {$matryoshka|substr:0:2}
- */
-smarty.addModifier('substr', function(input, start, length){
-	if( !smarty.utils.isString(input) )
-		return '';
+	/**
+	 * Returns substring from 'start' and to 'start' + 'length'
+	 * @param {String}	input	Input string
+	 * @param {Number}	start	Index to start from
+	 * @param {Number}	length	Length of substring
+	 * @type {String}
+	 * @example {$matryoshka|substr:0:2}
+	 */
+	smarty.addModifier('substr', function(input, start, length){
+		if( !smarty.utils.isString(input) )
+			return '';
 	
-	return input.substr(start, length);
-});
+		return input.substr(start, length);
+	});
 
-/**
- * Returns string transformed to upper case
- * @param {String} input	Origin string
- * @type {String}
- * @example {$shapkaUshanka|upper}
- */
-smarty.addModifier('upper', function(input){
-	if( !smarty.utils.isString(input) )
-		return '';
+	/**
+	 * Returns string transformed to upper case
+	 * @param {String} input	Origin string
+	 * @type {String}
+	 * @example {$shapkaUshanka|upper}
+	 */
+	smarty.addModifier('upper', function(input){
+		if( !smarty.utils.isString(input) )
+			return '';
 	
-	return input.toUpperCase();
-});
+		return input.toUpperCase();
+	});
 
-/**
- * Returns string transformed to lower case
- * @param {String} input	Origin string
- * @type {String}
- * @example {$shapkaUshanka|lower}
- */
-smarty.addModifier('lower', function(input){
-	if( !smarty.utils.isString(input) )
-		return '';
+	/**
+	 * Returns string transformed to lower case
+	 * @param {String} input	Origin string
+	 * @type {String}
+	 * @example {$shapkaUshanka|lower}
+	 */
+	smarty.addModifier('lower', function(input){
+		if( !smarty.utils.isString(input) )
+			return '';
 	
-	return input.toLowerCase();
-});
+		return input.toLowerCase();
+	});
 
-/**
- * Returns origin string with appended 'value' at the end
- * @param {String}	input	Origin string
- * @param {String}	value	String to append
- * @type {String}
- * @example {$medvedi|cat:' on a becycle'}
- */
-smarty.addModifier('cat', function(input, value){
-	if( !smarty.utils.isString(input) )
-		return '';
+	/**
+	 * Returns origin string with appended 'value' at the end
+	 * @param {String}	input	Origin string
+	 * @param {String}	value	String to append
+	 * @type {String}
+	 * @example {$medvedi|cat:' on a becycle'}
+	 */
+	smarty.addModifier('cat', function(input, value){
+		if( !smarty.utils.isString(input) )
+			return '';
 	
-	return input + (value || '');
-});
+		return input + (value || '');
+	});
 
-/**
- * Replace '\n' with '<br />'
- * @param {String} input	Origin string
- * @type {String}
- * @example {$babushka|nl2br}
- */
-smarty.addModifier('nl2br', function(input){
-	if( !smarty.utils.isString(input) )
-		return '';
+	/**
+	 * Replace '\n' with '<br />'
+	 * @param {String} input	Origin string
+	 * @type {String}
+	 * @example {$babushka|nl2br}
+	 */
+	smarty.addModifier('nl2br', function(input){
+		if( !smarty.utils.isString(input) )
+			return '';
 	
-	return input.replace(/\n/, '<br />');
-});
+		return input.replace(/\n/, '<br />');
+	});
 
-smarty.addModifier('date_format', function(input){
-	// TODO: Implement
-	return input;
-});
+	smarty.addModifier('date_format', function(input){
+		// TODO: Implement
+		return input;
+	});
 
-smarty.addModifier('truncate', function(input, length, tail){
-	return input.substr(0, length) + (tail || '');
-});
+	smarty.addModifier('truncate', function(input, length, tail){
+		return input.substr(0, length) + (tail || '');
+	});
 
-smarty.addModifier('split', function(input, separator, limit){
-	if( !smarty.utils.isString(input) )
-		return [];
+	smarty.addModifier('split', function(input, separator, limit){
+		if( !smarty.utils.isString(input) )
+			return [];
 	
-	return input.split(separator, limit);
-});
+		return input.split(separator, limit);
+	});
 
-smarty.addModifier('join', function(input, separator){
-	if( !smarty.utils.isArray(input) )
-		return '';
+	smarty.addModifier('join', function(input, separator){
+		if( !smarty.utils.isArray(input) )
+			return '';
 	
-	return input.join(separator);
-});
+		return input.join(separator);
+	});
 
-smarty.addModifier('isset', function(input){
-	if( smarty.utils.isUndefined(input) || null === input )
-		return false;
+	smarty.addModifier('isset', function(input){
+		if( smarty.utils.isUndefined(input) || null === input )
+			return false;
 	
-	return true;
-});
-
-smarty.addModifier('empty', function(input){
-	if( !input )
 		return true;
+	});
 
-	if( smarty.utils.isArray(input) || smarty.utils.isObject(input) )
-		return smarty.utils.count(input) === 0;			
-	
-	return false;
-});
+	smarty.addModifier('empty', function(input){
+		if( !input )
+			return true;
 
-smarty.addModifier('escape', function(input, type){
-	switch( '' + type ){
-		case 'html':
-			var div = document.createElement('div'), text = document.createTextNode(input);
-			div.appendChild(text);
-			input = div.innerHTML;		
-			break;
-		case 'url':
-			input = encodeURI(input);
-			break;
-		case 'urlpathinfo':
-			input = encodeURI(input).replace('%2F', '/');
-			break;
-		case 'quotes':
-			input = input.replace(/(['"])/g, "\\$1");
-			break;
-		case 'hex':
-			break;
-		case 'hexentity':
-			break;
-		case 'javascript':
-			break;
-		case 'mail':
-			break;
-	}
+		if( smarty.utils.isArray(input) || smarty.utils.isObject(input) )
+			return smarty.utils.count(input) === 0;			
 	
-	return input;
-});
+		return false;
+	});
+
+	window.smarty.addModifier('escape', function(input, type){
+		switch( '' + type ){
+			case 'html':
+				var div = document.createElement('div'), text = document.createTextNode(input);
+				div.appendChild(text);
+				input = div.innerHTML;		
+				break;
+			case 'url':
+				input = encodeURI(input);
+				break;
+			case 'urlpathinfo':
+				input = encodeURI(input).replace('%2F', '/');
+				break;
+			case 'quotes':
+				input = input.replace(/(['"])/g, "\\$1");
+				break;
+			case 'hex':
+				break;
+			case 'hexentity':
+				break;
+			case 'javascript':
+				break;
+			case 'mail':
+				break;
+		}
+	
+		return input;
+	});
 
 // TODO strtotime, date_format
+})(window);
