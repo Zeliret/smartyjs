@@ -2291,7 +2291,7 @@ Oy
 		
 			var obj = this.uniqueName(), key = this.uniqueName(), ns = this.uniqueName('ns_'),
 			result = smarty.utils.format("/* FOREACH */\
-			var {0} = {1}, {2} = { key: null, iteration: 0 };\
+			var {0} = {1}, {2} = { key: null, iteration: 0, total: smarty.utils.count({0}), first: true, last: false };\
 			this.sn('{3}');", obj, attr.from, this._data.foreachMeta, ns);
 		
 			if( attr.name )
@@ -2301,9 +2301,11 @@ Oy
 			if( smarty.utils.isObject({1}) || smarty.utils.isArray({1}) )\
 				for(var {0} in {1}){\
 					if(!{1}.hasOwnProperty({0})) continue;\
-					{2}.iteration++, smarty.utils.extend({2}, {\
-						key: {0}\
-					});\
+					smarty.utils.extend({2}, {\
+						key: {0},\
+						first: {2}.iteration == 0,\
+						last: {2}.iteration == {2}.total - 1\
+					}), {2}.iteration++;\
 					this.sv({3}, {1}[{0}]);",			
 				key, obj, this._data.foreachMeta, attr.item );
 			

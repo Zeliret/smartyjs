@@ -168,8 +168,12 @@ QUnit.test('Foreach', function(){
 		[ "{foreach from=$letters item=\"number\"}{$number} {/foreach}", '1 2 3 4 5 ' ],
 		[ "{foreach from=$letters item=number key=letter}{$letter}: {$number}, {/foreach}", 'a: 1, b: 2, c: 3, d: 4, e: 5, ' ],
 		[ "{foreach from=$letters item=number name=myFor}{$myFor.key} {/foreach}", 'a b c d e ' ],
-		[ "{foreach from=$letters item=number}{$number}{break}{/foreach}", '1' ],
-		[ "{foreach from=$empty item=item}{$item}{foreachelse}else!{/foreach}", 'else!' ]
+		[ "{foreach from=$letters item='number' name='myFor'}{$myFor.iteration} {/foreach}", '1 2 3 4 5 ' ],
+		[ "{foreach from=$letters item='number' name='myFor'}{if $myFor.first}{$number}{break}{/if}{/foreach}", '1' ],
+		[ "{foreach from=$letters item='number' name='myFor'}{if $myFor.last}{$number}{break}{/if}{/foreach}", '5' ],
+		[ "{foreach from=$letters item='number' name='myFor'}{$myFor.total}{break}{/foreach}", '5' ],
+		[ "{foreach from=$letters item='number'}{$number}{break}{/foreach}", '1' ],
+		[ "{foreach from=$empty item='item'}{$item}{foreachelse}else!{/foreach}", 'else!' ]
 		]);
 });
 
