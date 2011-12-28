@@ -1440,7 +1440,7 @@ Oy
 			
 			var pos = 0, first = keys[pos++], mods = meta.modifiers || {}, result = '',
 			evaluator = function(variable){
-				if( pos < len && variable.hasOwnProperty ){
+				if( pos < len && variable && variable.hasOwnProperty ){
 					var key = keys[pos++];
 					if( smarty.utils.isObject(key) )
 						key = this.gv(key);
