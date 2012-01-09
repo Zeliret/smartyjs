@@ -2642,13 +2642,8 @@ Oy
 		return input.replace(/\n/, '<br />');
 	});
 
-	smarty.addModifier('date_format', function(input){
-		// TODO: Implement
-		return input;
-	});
-
 	smarty.addModifier('truncate', function(input, length, tail){
-		return input.substr(0, length) + (tail || '');
+		return ('' + input).substr(0, length) + (tail || '');
 	});
 
 	smarty.addModifier('split', function(input, separator, limit){
