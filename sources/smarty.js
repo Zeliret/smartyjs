@@ -122,7 +122,7 @@
 		settings: {
 			isDebug: false,
 			includeHandler: function(){
-				throw new smarty.Exception("Method isn't implemented yet!");
+				throw new smarty.Exception("Method 'includeHandler' isn't implemented yet!");
 			},
 			includeTimeout: 3000
 		},
