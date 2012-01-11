@@ -1457,13 +1457,13 @@ Oy
 		var instance, source = arguments[1] || null;
 		if( smarty.Template.isExists(name) )
 			instance = smarty.Template.get(name);
-		else
-			instance = new smarty.Template(name);
-			
-		if( smarty.utils.isString(source) )
-			instance.compile(source);
-		else if( smarty.utils.isFunction(source) )
-			instance.load(source, smarty.utils.isArray(arguments[2]) ? arguments[2] : []);
+		else {
+			instance = new smarty.Template(name);			
+			if( smarty.utils.isString(source) )
+				instance.compile(source);
+			else if( smarty.utils.isFunction(source) )
+				instance.load(source, smarty.utils.isArray(arguments[2]) ? arguments[2] : []);
+		}			
 			
 		return instance;
 	};
