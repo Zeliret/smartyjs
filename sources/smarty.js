@@ -2679,8 +2679,11 @@ Oy
 
 	// TODO: add test
 	smarty.addModifier('escape', function(input, type){
+		if( !smarty.utils.isString(input) )
+			return '';
+
 		var eu = encodeURI;
-		switch( '' + type ){
+		switch( type ){
 			case 'html':
 				return smarty.utils.htmlspecialchars(input, 'ENT_QUOTES');
 			case 'url':
