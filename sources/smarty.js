@@ -2814,7 +2814,7 @@
 	// TODO: add test
 	smarty.addModifier('escape', function(input, type) {
 		if (!smarty.utils.isString(input)) {
-			return '';
+			return input;
 		}
 
 		var eu = encodeURI;
