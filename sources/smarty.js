@@ -2845,7 +2845,7 @@
 		var date;
 		// Mysql datetime format
 		if ((date = /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/.exec(input))) {
-			date = new Date(date[1], date[2], date[3], date[4], date[5], date[6]);
+			date = new Date(date[1], date[2] - 1, date[3], date[4], date[5], date[6]);
 		} else {
 			date = new Date(input);
 		}
