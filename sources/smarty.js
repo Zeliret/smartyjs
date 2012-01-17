@@ -1026,6 +1026,24 @@
 		},
 
 		/**
+		 * Detect if object is number
+		 * @param {Object} obj
+		 * @type {Boolean}
+		 */
+		isNumber: function(obj) {
+			return this.getType(obj) === 'number';
+		},
+
+		/**
+		 * Detect if object is boolean
+		 * @param {Object} obj
+		 * @type {Boolean}
+		 */
+		isBoolean: function(obj) {
+			return this.getType(obj) === 'boolean';
+		},
+
+		/**
 		 * Detect if object is array
 		 * @param {Object} obj
 		 * @type {Boolean}
@@ -2707,6 +2725,9 @@
 	 * @example {$matryoshka|substr:0:2}
 	 */
 	smarty.addModifier('substr', function(input, start, length) {
+		if (smarty.utils.isNumber(input) || smarty.utils.isBoolean(input)) {
+			input = input.toString();
+		}
 		if (!smarty.utils.isString(input)) {
 			return '';
 		}
@@ -2722,7 +2743,7 @@
 	 */
 	smarty.addModifier('upper', function(input) {
 		if (!smarty.utils.isString(input)) {
-			return '';
+			return input;
 		}
 
 		return input.toUpperCase();
@@ -2736,7 +2757,7 @@
 	 */
 	smarty.addModifier('lower', function(input) {
 		if (!smarty.utils.isString(input)) {
-			return '';
+			return input;
 		}
 
 		return input.toLowerCase();
@@ -2750,6 +2771,9 @@
 	 * @example {$medvedi|cat:' on a becycle'}
 	 */
 	smarty.addModifier('cat', function(input, value) {
+		if (smarty.utils.isNumber(input) || smarty.utils.isBoolean(input)) {
+			input = input.toString();
+		}
 		if (!smarty.utils.isString(input)) {
 			return '';
 		}
@@ -2765,10 +2789,10 @@
 	 */
 	smarty.addModifier('nl2br', function(input) {
 		if (!smarty.utils.isString(input)) {
-			return '';
+			return input;
 		}
 
-		return input.replace(/\n/, '<br />');
+		return input.replace(/\n/g, '<br />');
 	});
 
 	smarty.addModifier('truncate', function(input, length, tail) {
