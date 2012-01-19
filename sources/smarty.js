@@ -792,8 +792,8 @@
 			 */
 
 			var _date = ((typeof(timestamp) == 'undefined') ? new Date() : // Not provided
-				(typeof(timestamp) == 'object') ? new Date(timestamp) : // Javascript Date()
-					new Date(timestamp * 1000) // PHP API expects UNIX timestamp (auto-convert to int)
+			             (typeof(timestamp) == 'object') ? new Date(timestamp) : // Javascript Date()
+			             new Date(timestamp * 1000) // PHP API expects UNIX timestamp (auto-convert to int)
 				);
 
 			var _aggregates = {
@@ -1091,7 +1091,7 @@
 	smarty.debug = {
 		_isGroup: false,
 		_canDebug: function() {
-			return smarty.settings.isDebug && window.console;
+			return smarty.settings.isDebug && window.console && window.console.log;
 		},
 
 		_formatMessage: function(msg) {
@@ -1107,18 +1107,22 @@
 
 		log: function() {
 			var formattedMsg = smarty.utils.format.apply(smarty.utils, arguments);
-			return this._canDebug() && console.log(this._isGroup ? formattedMsg : this._formatMessage(formattedMsg)), this;
+			return this._canDebug() && window.console.log(this._isGroup ? formattedMsg : this._formatMessage(formattedMsg)), this;
 		},
 
 		group: function(title, isCollapsed) {
-			var formattedTitle = this._formatMessage(title);
-			this._isGroup = true;
-			return this._canDebug() && (isCollapsed ? console.groupCollapsed(formattedTitle) : console.group(formattedTitle)), this;
+			if (window.console.group && window.console.groupCollapsed) {
+				var formattedTitle = this._formatMessage(title);
+				this._isGroup = true;
+				return this._canDebug() && (isCollapsed ? window.console.groupCollapsed(formattedTitle) : window.console.group(formattedTitle)), this;
+			}
 		},
 
 		groupEnd: function() {
-			this._isGroup = false;
-			return this._canDebug() && console.groupEnd(), this;
+			if (window.console.groupEnd) {
+				this._isGroup = false;
+				return this._canDebug() && window.console.groupEnd(), this;
+			}
 		}
 	};
 
