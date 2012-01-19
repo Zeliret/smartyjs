@@ -94,7 +94,7 @@
 			if (k in O) {
 
 				// i. Let kValue be the result of calling the Get internal method of O with argument Pk.  
-				kValue = O[ Pk ];
+				kValue = O[ k ];
 
 				// ii. Call the Call internal method of callback with T as the this value and  
 				// argument list containing kValue, k, and O.  
