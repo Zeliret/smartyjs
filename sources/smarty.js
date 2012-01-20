@@ -1801,7 +1801,6 @@
 				{1}\
 				return {0}.join('');\
 			} catch( ex ){\
-				console.log(ex.stack);\
 				throw new smarty.RuntimeException(ex.message);\
 			}", this._captureName, parsedTpl.join('\n'));
 
