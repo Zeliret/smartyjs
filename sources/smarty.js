@@ -1115,6 +1115,8 @@
 				var formattedTitle = this._formatMessage(title);
 				this._isGroup = true;
 				return this._canDebug() && (isCollapsed ? window.console.groupCollapsed(formattedTitle) : window.console.group(formattedTitle)), this;
+			} else {
+				this._canDebug() && this.log('Your browser do not support console grouping methods!');
 			}
 		},
 
@@ -1122,6 +1124,8 @@
 			if (window.console.groupEnd) {
 				this._isGroup = false;
 				return this._canDebug() && window.console.groupEnd(), this;
+			} else {
+				this._canDebug() && this.log('Your browser do not support console group methods!');
 			}
 		}
 	};
