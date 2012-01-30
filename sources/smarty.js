@@ -2662,10 +2662,10 @@
 					"for(var {2} in {0}){" +
 					"{0}.hasOwnProperty({2}) && " +
 					"{3}.push('<option' + ({4} == {2} ? ' selected=\"selected\" ' : '') + " +
-					"'value=\"{2}\">{0}[{2}]</option>')" +
-					"{0}.push(this.inc({1}));",
+					"'value=\"{2}\">{0}[{2}]</option>') }",
 				this.uniqueName(),
 				attr.options,
+				this.uniqueName(),
 				this._captureName,
 				attr.selected);
 
