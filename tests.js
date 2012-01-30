@@ -45,7 +45,7 @@ var data = {
 		QUnit.expect(testSuite.length);
 		for (var i = 0; i < testSuite.length; i++) {
 			try {
-				smarty.Template(testCaseCounter += i, testPos = testSuite[i].shift()).exec(data, function(result) {
+				smarty.Template(testCaseCounter += i + 1, testPos = testSuite[i].shift()).exec(data, function(result) {
 					QUnit[testName](result, testSuite[i].shift(), testPos);
 				});
 			} catch (e) {
@@ -192,12 +192,12 @@ QUnit.test('Assign', function() {
 	]);
 });
 
-//QUnit.test('HtmlOptions', function() {
-//	tester('equal', [
-//		[ "{html_options options=$letters selected='b'}",
-//		  '<option value="a">1</option><option selected="selected" value="b">2</option><option value="c">3</option><option value="d">4</option><option value="e">5</option>' ]
-//	]);
-//});
+QUnit.test('HtmlOptions', function() {
+	tester('equal', [
+		[ "{html_options options=$letters selected='b'}",
+		  '<option value="a">1</option><option selected="selected" value="b">2</option><option value="c">3</option><option value="d">4</option><option value="e">5</option>' ]
+	]);
+});
 
 
 /*
