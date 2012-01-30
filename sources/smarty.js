@@ -2554,8 +2554,6 @@
 		},
 		start: function(expression) {
 			var attr = expression.getAttributes();
-
-
 			var meta = this.uniqueName(), ns = this.uniqueName('ns_'), start = this.uniqueName(), end = this.uniqueName(), result = smarty.utils.format("/* FOR */\
 			var {0} = { index: 0, iteration: 0 };\
 			this.sn('{1}');", meta, ns);
@@ -2658,8 +2656,20 @@
 			selected: [smarty.String, smarty.Variable]
 		},
 		start: function(expression) {
-			// TODO: Implement it
-			return "";
+			var attr = expression.getAttributes();
+			var result = smarty.utils.format(
+				"var {0} = {1};" +
+					"for(var {2} in {0}){" +
+					"{0}.hasOwnProperty({2}) && " +
+					"{3}.push('<option' + ({4} == {2} ? ' selected=\"selected\" ' : '') + " +
+					"'value=\"{2}\">{0}[{2}]</option>')" +
+					"{0}.push(this.inc({1}));",
+				this.uniqueName(),
+				attr.options,
+				this._captureName,
+				attr.selected);
+
+			return result;
 		}
 	});
 
