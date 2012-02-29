@@ -1412,11 +1412,7 @@
 		 * @type {Template}
 		 */
 		compile: function(source) {
-			if (!source) {
-				throw new smarty.Exception("Empty [source] parameter!");
-			}
-
-			this._source = source;
+			this._source = '' + source;
 			smarty.Compiler(this);
 
 			return this;
@@ -1556,7 +1552,7 @@
 	 * @type {smarty.Template}
 	 */
 	smarty.Template.factory = function(name) {
-		var instance, source = arguments[1] || null;
+		var instance, source = arguments[1];
 		if (smarty.Template.isExists(name)) {
 			instance = smarty.Template.get(name);
 		} else {
