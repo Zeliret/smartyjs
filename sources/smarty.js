@@ -1102,7 +1102,11 @@
 				ms: date.getMilliseconds()
 			};
 
-			return smarty.utils.format("[DEBUG] {0}:{1}:{2}.{3}\t{4}", time.h, time.m, time.s, time.ms, msg);
+			return smarty.utils.format("[SMARTY DEBUG] {0}:{1}:{2}.{3}\t{4}",
+				time.h < 10 ? '0' + time.h : time.h,
+				time.m < 10 ? '0' + time.m : time.m,
+				time.s < 10 ? '0' + time.s : time.s,
+				time.ms < 10 ? '00' + time.ms : time.ms < 100 ? '0' + time.ms : time.ms, msg);
 		},
 
 		log: function() {
@@ -1251,7 +1255,7 @@
 	 * @param {String} name	Template name
 	 */
 	smarty.Template = function(name) {
-		if (smarty.utils.isUndefined(name) || null === name || '' == ('' + name).trim()) {
+		if (smarty.utils.isUndefined(name) || null === name || !('' + name).trim()) {
 			throw new smarty.Exception("Invalid template name '{0}'!", name);
 		}
 
@@ -1329,13 +1333,21 @@
 				throw new smarty.Exception("[smarty.settings.includeHandler] must be callable!");
 			}
 
-			if (includes.length) {
-				smarty.settings.includeHandler(includes);
-				//				clearTimeout(includesTimeoutHandler);
-				//				includesTimeoutHandler = window.setTimeout(function(){
-				//					throw new smarty.Exception("Template loading timeout is exceeded for the folowings templates: '{0}'", includes);
-				//				}, includesTimeout);
+			smarty.Template._loadingHash || (smarty.Template._loadingHash = {});
+
+			var toLoad = [];
+			for (var i = 0, l = includes.length; i < l; i++) {
+				if (!smarty.Template._loadingHash[includes[i]]) {
+					toLoad.push(includes[i]);
+					smarty.Template._loadingHash[includes[i]] = true;
+				}
 			}
+
+			toLoad.length && smarty.settings.includeHandler(toLoad);
+			//				clearTimeout(includesTimeoutHandler);
+			//				includesTimeoutHandler = window.setTimeout(function(){
+			//					throw new smarty.Exception("Template loading timeout is exceeded for the folowings templates: '{0}'", includes);
+			//				}, includesTimeout);
 		},
 
 		/**
@@ -1352,7 +1364,7 @@
 
 			var cb = function() {
 				callback(this._closure.call(data instanceof smarty.Sandbox ? data : new smarty.Sandbox(data)));
-				smarty.debug.log('Template: the [{0}] template executed successfully.', this._name);
+				smarty.debug.log('Template: the [{0}] template has executed successfully.', this._name);
 			}.bind(this);
 
 			if (!this.isReady()) {
@@ -1378,7 +1390,7 @@
 
 			smarty.debug.log('Template: the [{0}] template is trying to execute synchronously.', this._name);
 			var result = this._closure.call(data instanceof smarty.Sandbox ? data : new smarty.Sandbox(data));
-			smarty.debug.log('Template: the [{0}] template executed successfully.', this._name);
+			smarty.debug.log('Template: the [{0}] template has executed successfully.', this._name);
 
 			return result;
 		},
