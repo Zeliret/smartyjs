@@ -106,6 +106,38 @@
 		// 8. return undefined
 	});
 
+	Array.prototype.indexOf || (Array.prototype.indexOf = function(searchElement /*, fromIndex */) {
+		if (this == null) {
+			throw new TypeError();
+		}
+		var t = Object(this);
+		var len = t.length >>> 0;
+		if (len === 0) {
+			return -1;
+		}
+		var n = 0;
+		if (arguments.length > 0) {
+			n = Number(arguments[1]);
+			if (n != n) { // shortcut for verifying if it's NaN
+				n = 0;
+			} else {
+				if (n != 0 && n != Infinity && n != -Infinity) {
+					n = (n > 0 || -1) * Math.floor(Math.abs(n));
+				}
+			}
+		}
+		if (n >= len) {
+			return -1;
+		}
+		var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+		for (; k < len; k++) {
+			if (k in t && t[k] === searchElement) {
+				return k;
+			}
+		}
+		return -1;
+	} );
+
 	/*
 	 * ECMAScript 5th Edition: String.trim()
 	 */
@@ -132,7 +164,7 @@
 
 		/**
 		 * Configure smarty library
-		 * @param {Object} settings		Configuration settings
+		 * @param {Object} settings      Configuration settings
 		 * @type {smarty}
 		 */
 		configure: function(settings) {
@@ -145,8 +177,8 @@
 
 		/**
 		 * Add modifier to engine
-		 * @param {String} name			A name of modifier
-		 * @param {Function} modifier	Function that describe logic of modifier
+		 * @param {String} name         A name of modifier
+		 * @param {Function} modifier   Function that describe logic of modifier
 		 * @type {smarty}
 		 */
 		addModifier: function(name, modifier) {
@@ -161,8 +193,8 @@
 
 		/**
 		 * Add function to engine
-		 * @param {String} name			A name of function
-		 * @param {Function} func		Function that is called at begin
+		 * @param {String} name         A name of function
+		 * @param {Function} func      Function that is called at begin
 		 * @type {smarty}
 		 */
 		addFunction: function(name, func) {
@@ -175,9 +207,9 @@
 
 		/**
 		 * Add operator to engine
-		 * @param {String}		name	A name of operator
-		 * @param {Function}	start	Function that is called at begin
-		 * @param {Function}	end		Function that is called at end
+		 * @param {String}      name   A name of operator
+		 * @param {Function}   start   Function that is called at begin
+		 * @param {Function}   end      Function that is called at end
 		 * @type {smarty}
 		 */
 		addOperator: function(name, start, end) {
@@ -191,8 +223,8 @@
 
 		/**
 		 * Add custom entity to engine
-		 * @param {String} name		A name of entity
-		 * @param {Object} options	Options
+		 * @param {String} name      A name of entity
+		 * @param {Object} options   Options
 		 */
 		addEntity: function(name, options) {
 			options = this.utils.extend({
@@ -201,7 +233,7 @@
 				},
 				/**
 				 * Method is called after open tag is parsed
-				 * @param {smarty.Expression} expression	Parsed expression
+				 * @param {smarty.Expression} expression   Parsed expression
 				 */
 				start: function(expression) {
 					return '';
@@ -906,7 +938,7 @@
 
 		/**
 		 * Format string. Replace placeholders {0} {1} etc., with values from arguments
-		 * @param {String} format	Input string with format
+		 * @param {String} format   Input string with format
 		 * @type {String}
 		 */
 		format: function(format) {
@@ -920,7 +952,7 @@
 
 		/**
 		 * Extend first param object with other objects
-		 * @param {Object} obj	Object to extend
+		 * @param {Object} obj   Object to extend
 		 */
 		extend: function(obj) {
 			Array.prototype.slice.call(arguments, 1).forEach(function(source) {
@@ -936,10 +968,10 @@
 
 		/**
 		 * Inherit 'class'
-		 * @param {Object} parent			Parent 'class'
-		 * @param {Object} protoProps		Prototype properties
-		 * @param {Object} staticProps		Constructor properties
-		 * @type {Object}					Child 'class'
+		 * @param {Object} parent         Parent 'class'
+		 * @param {Object} protoProps      Prototype properties
+		 * @param {Object} staticProps      Constructor properties
+		 * @type {Object}               Child 'class'
 		 */
 		inherit: function(parent, protoProps, staticProps) {
 			var child, dummy = function() {
@@ -1252,7 +1284,7 @@
 	/**
 	 * Create template instance
 	 * @constructor
-	 * @param {String} name	Template name
+	 * @param {String} name   Template name
 	 */
 	smarty.Template = function(name) {
 		if (smarty.utils.isUndefined(name) || null === name || !('' + name).trim()) {
@@ -1286,7 +1318,7 @@
 
 		/**
 		 * Template load handler
-		 * @param {String} name	Loaded template name
+		 * @param {String} name   Loaded template name
 		 */
 		_loadHandler: function(name) {
 			if (name && name in this._includesMap) {
@@ -1325,7 +1357,7 @@
 
 		/**
 		 * Trigger includes handler
-		 * @param {Array}	includes	Array of includes
+		 * @param {Array}   includes   Array of includes
 		 * @todo Timeout
 		 */
 		_triggerIncludesHandler: function(includes) {
@@ -1352,8 +1384,8 @@
 
 		/**
 		 * Execute rendering compiled template asynchronous
-		 * @param {Object}			data		JSON data for template
-		 * @param {Function}		callback	Callback that is called when template rendering is finished
+		 * @param {Object}         data      JSON data for template
+		 * @param {Function}      callback   Callback that is called when template rendering is finished
 		 */
 		exec: function(data, callback) {
 			if (!smarty.utils.isFunction(callback)) {
@@ -1379,7 +1411,7 @@
 
 		/**
 		 * Execute template synchronous
-		 * @param {Object}			data	Template data
+		 * @param {Object}         data   Template data
 		 * @type {String}
 		 * @throws {smarty.Exception}
 		 */
@@ -1420,7 +1452,7 @@
 
 		/**
 		 * Compile template from string
-		 * @param {String} source	Template string
+		 * @param {String} source   Template string
 		 * @type {Template}
 		 */
 		compile: function(source) {
@@ -1432,8 +1464,8 @@
 
 		/**
 		 * Load template from compiled source
-		 * @param {Function} closure	Compiled lambda
-		 * @param {Array} includes			Array of includes
+		 * @param {Function} closure   Compiled lambda
+		 * @param {Array} includes         Array of includes
 		 * @type {Template}
 		 */
 		load: function(closure, includes) {
@@ -1504,7 +1536,7 @@
 
 	/**
 	 * Check if exists template with specified name
-	 * @param {String} name	Template object name
+	 * @param {String} name   Template object name
 	 * @type {Boolean}
 	 * @static
 	 */
@@ -1514,7 +1546,7 @@
 
 	/**
 	 * Get template by name
-	 * @param {String} name	Template name
+	 * @param {String} name   Template name
 	 * @type {smarty.Template}
 	 * @static
 	 */
@@ -1542,7 +1574,7 @@
 
 	/**
 	 * Remove template by name
-	 * @param {String} name	Template name
+	 * @param {String} name   Template name
 	 * @static
 	 */
 	smarty.Template.remove = function(name) {
@@ -1556,7 +1588,7 @@
 	/**
 	 * Always returns template object.
 	 * If template isn't exists it will be created.
-	 * @param {String} name		Template name
+	 * @param {String} name      Template name
 	 * @example
 	 * smarty.Template.factory('a');
 	 * smarty.Template.factory('b', templateSource);
@@ -1592,7 +1624,7 @@
 
 	/**
 	 * Smarty sandbox that is used as context of a compiled template
-	 * @param {Object} data	Template data
+	 * @param {Object} data   Template data
 	 * @constructor
 	 */
 	smarty.Sandbox = function(data) {
@@ -1612,7 +1644,7 @@
 
 		/**
 		 * Get variable
-		 * @param {Object} meta		Variable data
+		 * @param {Object} meta      Variable data
 		 * @type {Object}
 		 */
 		gv: function(meta) {
@@ -1661,8 +1693,8 @@
 
 		/**
 		 * Set local variable
-		 * @param {String}	varname		Name of variable
-		 * @param {Mixed}	value		Value
+		 * @param {String}   varname      Name of variable
+		 * @param {Mixed}   value      Value
 		 * @type {smarty.Sandbox}
 		 */
 		sv: function(varname, value) {
@@ -1674,7 +1706,7 @@
 
 		/**
 		 * Start namespace
-		 * @param {String} namespace	Namespace name
+		 * @param {String} namespace   Namespace name
 		 * @type {smarty.Sandbox}
 		 */
 		sn: function(namespace) {
@@ -1690,7 +1722,7 @@
 
 		/**
 		 * End namespace
-		 * @param {String}	namespace	Namespace to close
+		 * @param {String}   namespace   Namespace to close
 		 * @type {smarty.Sandbox}
 		 */
 		en: function(namespace) {
@@ -1713,7 +1745,7 @@
 
 		/**
 		 * Include template
-		 * @param {String}	name		Template name to include
+		 * @param {String}   name      Template name to include
 		 * @type {String}
 		 */
 		inc: function(name) {
@@ -1733,7 +1765,7 @@
 
 	/**
 	 * Compiler
-	 * @param {smarty.Template} template	Template
+	 * @param {smarty.Template} template   Template
 	 * @constructor
 	 */
 	smarty.Compiler = function(template) {
@@ -1819,7 +1851,7 @@
 
 		/**
 		 * Generate unique name
-		 * @param {String} prefix	Prefix
+		 * @param {String} prefix   Prefix
 		 * @type {String}
 		 */
 		uniqueName: function(prefix) {
@@ -1835,7 +1867,7 @@
 
 		/**
 		 * Parse template string
-		 * @param {String} string	Template string
+		 * @param {String} string   Template string
 		 * @type {String}
 		 * @todo Add 'after' options support
 		 */
@@ -1847,37 +1879,37 @@
 				wrapData = function(data) {
 					return smarty.utils.format("{0}.push('{1}');", this._captureName, data.replace(/'/g, "\\'"));
 				}.bind(this), processExpression = function(entity, body) {
-				var expression = new smarty.Expression(body), attributes = expression.getAttributes();
-				for (var name in entity.attributes) {
-					if (name === '_required') {
-						entity.attributes[name].forEach(function(require) {
-							if (!(require in attributes)) {
-								throw new smarty.CompileException(this, "Required attribute '{0}' not exists!", require);
-							}
-						}.bind(this));
-					} else {
-						if (attributes[name]) {
-							var types = entity.attributes[name];
-							if (!smarty.utils.isArray(types)) {
-								throw new smarty.CompileException(this, "Invalid attribute's meta definition!");
-							}
-
-							var validType = false;
-							types.forEach(function(type) {
-								if (attributes[name] instanceof type) {
-									validType = true;
+					var expression = new smarty.Expression(body), attributes = expression.getAttributes();
+					for (var name in entity.attributes) {
+						if (name === '_required') {
+							entity.attributes[name].forEach(function(require) {
+								if (!(require in attributes)) {
+									throw new smarty.CompileException(this, "Required attribute '{0}' not exists!", require);
 								}
-							});
+							}.bind(this));
+						} else {
+							if (attributes[name]) {
+								var types = entity.attributes[name];
+								if (!smarty.utils.isArray(types)) {
+									throw new smarty.CompileException(this, "Invalid attribute's meta definition!");
+								}
 
-							if (!validType) {
-								throw new smarty.CompileException(this, "Invalid attribute type '{0}'!", name);
+								var validType = false;
+								types.forEach(function(type) {
+									if (attributes[name] instanceof type) {
+										validType = true;
+									}
+								});
+
+								if (!validType) {
+									throw new smarty.CompileException(this, "Invalid attribute type '{0}'!", name);
+								}
 							}
 						}
 					}
-				}
 
-				return expression;
-			}.bind(this);
+					return expression;
+				}.bind(this);
 
 			// Iterate over string with regular expression
 			while (null !== (match = /{([$\/@])?([\w][\w\d]*)([^}]*)}/.exec(string))) {
@@ -1901,7 +1933,7 @@
 					entity.body = 'variable=' + entity.typeBit + entity.name + entity.body;
 					entity.name = 'var';
 				} else {
-					if (entity.typeBit === '@') {	// System token
+					if (entity.typeBit === '@') {   // System token
 						if (entity.name === 'comment') {
 							return this._line += parseInt(entity.body), '';
 						}
@@ -1913,7 +1945,7 @@
 				// Begin parsing entity
 				if (entityData) { // Function exists
 					if (entity.typeBit === '/') { // It is closing tag
-						if (entityData.end) {	// Function requires closing tag
+						if (entityData.end) {   // Function requires closing tag
 							var prev, passed = false;
 							while ((prev = this._stack.pop())) {
 								if (!prev.entity.end) {
@@ -1977,7 +2009,7 @@
 
 	/**
 	 * Expression parser
-	 * @param {String} origin	Origin string to parse
+	 * @param {String} origin   Origin string to parse
 	 * @constructor
 	 */
 	smarty.Expression = function(origin) {
@@ -2393,7 +2425,7 @@
 	};
 
 	/*******************************************************************
-	 *	Some dark magic! ,O
+	 *   Some dark magic! ,O
 	 *******************************************************************/
 
 	"Boolean,Number,String,Function,Array,Date,RegExp,Object".split(',').forEach(function(item) {
@@ -2716,8 +2748,8 @@
 
 	/**
 	 * Return default value if var is empty
-	 * @param {Object}	input	Origin variable value
-	 * @param {String}	value	Default variable value if its empty
+	 * @param {Object}   input   Origin variable value
+	 * @param {String}   value   Default variable value if its empty
 	 * @example {$balalaika|default:'broken'}
 	 */
 	smarty.addModifier('default', function(input, value) {
@@ -2744,9 +2776,9 @@
 
 	/**
 	 * Returns substring from 'start' and to 'start' + 'length'
-	 * @param {String}	input	Input string
-	 * @param {Number}	start	Index to start from
-	 * @param {Number}	length	Length of substring
+	 * @param {String}   input   Input string
+	 * @param {Number}   start   Index to start from
+	 * @param {Number}   length   Length of substring
 	 * @type {String}
 	 * @example {$matryoshka|substr:0:2}
 	 */
@@ -2763,7 +2795,7 @@
 
 	/**
 	 * Returns string transformed to upper case
-	 * @param {String} input	Origin string
+	 * @param {String} input   Origin string
 	 * @type {String}
 	 * @example {$shapkaUshanka|upper}
 	 */
@@ -2777,7 +2809,7 @@
 
 	/**
 	 * Returns string transformed to lower case
-	 * @param {String} input	Origin string
+	 * @param {String} input   Origin string
 	 * @type {String}
 	 * @example {$shapkaUshanka|lower}
 	 */
@@ -2791,8 +2823,8 @@
 
 	/**
 	 * Returns origin string with appended 'value' at the end
-	 * @param {String}	input	Origin string
-	 * @param {String}	value	String to append
+	 * @param {String}   input   Origin string
+	 * @param {String}   value   String to append
 	 * @type {String}
 	 * @example {$medvedi|cat:' on a becycle'}
 	 */
@@ -2809,7 +2841,7 @@
 
 	/**
 	 * Replace '\n' with '<br />'
-	 * @param {String} input	Origin string
+	 * @param {String} input   Origin string
 	 * @type {String}
 	 * @example {$babushka|nl2br}
 	 */
