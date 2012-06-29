@@ -2854,7 +2854,12 @@
 	});
 
 	smarty.addModifier('truncate', function(input, length, tail) {
-		return ('' + input).substr(0, length) + (tail || '');
+		input = '' + input;
+		if (input.length > length) {
+			return input.substr(0, length) + (tail || '');
+		}
+
+		return input;  
 	});
 
 	smarty.addModifier('split', function(input, separator, limit) {
