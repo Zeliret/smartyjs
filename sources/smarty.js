@@ -2859,7 +2859,7 @@
 			return input.substr(0, length) + (tail || '');
 		}
 
-		return input;  
+		return input;
 	});
 
 	smarty.addModifier('split', function(input, separator, limit) {
