@@ -1146,27 +1146,31 @@
 			return this._canDebug() && window.console.log(this._isGroup ? formattedMsg : this._formatMessage(formattedMsg)), this;
 		},
 
-		group: function(title, isCollapsed) {alert(1);
-			if (this._canDebug()) {alert(2);
+		group: function(title, isCollapsed) {
+			if (this._canDebug()) {
 				if (window.console.group && window.console.groupCollapsed) {
 					var formattedTitle = this._formatMessage(title);
 					this._isGroup = true;
-					return (isCollapsed ? window.console.groupCollapsed(formattedTitle) : window.console.group(formattedTitle)), this;
-				} else {alert(3);
-					return this.log('Your browser do not support console grouping methods!'), this;
+					isCollapsed ? window.console.groupCollapsed(formattedTitle) : window.console.group(formattedTitle);
+				} else {
+					this.log('Your browser do not support console grouping methods!');
 				}
 			}
+
+			return this;
 		},
 
 		groupEnd: function() {
 			if (this._canDebug()) {
 				if (window.console.groupEnd) {
 					this._isGroup = false;
-					return  window.console.groupEnd(), this;
+					window.console.groupEnd();
 				} else {
-					return this.log('Your browser do not support console group methods!'), this;
+					this.log('Your browser do not support console group methods!');
 				}
 			}
+
+			return this;
 		}
 	};
 
