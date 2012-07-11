@@ -1267,7 +1267,7 @@
 							list.splice(i, 1);
 							i--;
 							l--;
-						} else {
+						} else {alert(ev);
 							smarty.debug.log('Eventmanager: the [{0}] event is triggered.', ev);
 
 							args = both ? Array.prototype.slice.call(arguments, 1) : arguments;
