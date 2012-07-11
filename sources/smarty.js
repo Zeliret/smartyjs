@@ -1262,7 +1262,6 @@
 		// same arguments as `trigger` is, apart from the event name.
 		// Listening for `"all"` passes the true event name as the first argument.
 		trigger: function(eventName) {
-			alert('trigg');
 			var list, calls, ev, callback, args;
 			var both = 2;
 			if (!(calls = this._callbacks)) {
@@ -1302,7 +1301,6 @@
 
 		// If called without 'new' goto factory
 		if (!(this instanceof smarty.Template)) {
-			alert('sm fact');
 			return smarty.Template.factory.apply(smarty.Template, arguments);
 		}
 
@@ -1466,10 +1464,8 @@
 		 * @type {Template}
 		 */
 		compile: function(source) {
-			alert('comp');
 			this._source = '' + source;
 			smarty.Compiler(this);
-			alert('aft comp');
 			return this;
 		},
 
@@ -1784,12 +1780,10 @@
 			if (!(template instanceof smarty.Template)) {
 				throw new smarty.Exception("[template] must be instance of [smarty.Template]!");
 			}
-			alert('comp in 1');
 			var compiler = new smarty.Compiler();
 			compiler._template = template;
 			compiler._source = template.getSource();
 			compiler._compile();
-			alert('comp in 2');
 			template.load(compiler._closure, compiler._includes);
 		} else {
 			this._template = null;
@@ -1829,14 +1823,12 @@
 			}.bind(this)).split('\n');
 
 			var parsedTpl = [];
-			alert('__comp in 1');
 			// Iterate over template array and parse strings
 			template.forEach(function(string) {
 				var parsedString = this._compileString(string);
 				parsedTpl.push(parsedString);
 				this._line++;
 			}, this);
-			alert('__comp in 2');
 			// Check all tags to be closed
 			var last = null;
 			while (this._stack.length > 0) {
@@ -1845,7 +1837,6 @@
 					throw new smarty.CompileException(this, "Open tag '{0}' at line {1} doesn't have close tag!", last.name, last.line);
 				}
 			}
-			alert('__comp in 3');
 			//window.console.log(parsedTpl);
 
 			// Wrap template compiled code
@@ -1858,9 +1849,7 @@
 			}", this._captureName, parsedTpl.join('\n'));
 
 			this._closure = Function(codeStr);
-			alert('__comp in 4');
 			smarty.debug.group('Compiled source: ' + this.getTemplate().getName(), true).log(this._closure.toString()).groupEnd();
-			alert('__comp in 5');
 		},
 
 		/**
