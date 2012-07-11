@@ -1146,13 +1146,13 @@
 			return this._canDebug() && window.console.log(this._isGroup ? formattedMsg : this._formatMessage(formattedMsg)), this;
 		},
 
-		group: function(title, isCollapsed) {
-			if (this._canDebug()) {
+		group: function(title, isCollapsed) {alert(1);
+			if (this._canDebug()) {alert(2);
 				if (window.console.group && window.console.groupCollapsed) {
 					var formattedTitle = this._formatMessage(title);
 					this._isGroup = true;
 					return (isCollapsed ? window.console.groupCollapsed(formattedTitle) : window.console.group(formattedTitle)), this;
-				} else {
+				} else {alert(3);
 					return this.log('Your browser do not support console grouping methods!'), this;
 				}
 			}
