@@ -1458,7 +1458,7 @@
 		compile: function(source) {alert('comp');
 			this._source = '' + source;
 			smarty.Compiler(this);
-
+			alert('aft comp');
 			return this;
 		},
 
