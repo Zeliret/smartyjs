@@ -1846,7 +1846,7 @@
 
 			this._closure = Function(codeStr);
 			alert('__comp in 4');
-			smarty.debug.group('Compiled source: ' + this.getTemplate().getName(), true).log(this._closure.toString()).groupEnd();
+			smarty.debug.group('Compiled source: ' + this.getTemplate().getName(), true).log(this._closure.toString()).groupEnd();alert('__comp in 5');
 		},
 
 		/**
