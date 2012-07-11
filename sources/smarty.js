@@ -1773,11 +1773,11 @@
 			if (!(template instanceof smarty.Template)) {
 				throw new smarty.Exception("[template] must be instance of [smarty.Template]!");
 			}
-
+			alert('comp in 1');
 			var compiler = new smarty.Compiler();
 			compiler._template = template;
 			compiler._source = template.getSource();
-			compiler._compile();
+			compiler._compile();alert('comp in 2');
 			template.load(compiler._closure, compiler._includes);
 		} else {
 			this._template = null;
