@@ -1455,7 +1455,7 @@
 		 * @param {String} source   Template string
 		 * @type {Template}
 		 */
-		compile: function(source) {
+		compile: function(source) {alert('comp');
 			this._source = '' + source;
 			smarty.Compiler(this);
 
