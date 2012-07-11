@@ -1147,21 +1147,25 @@
 		},
 
 		group: function(title, isCollapsed) {
-			if (window.console.group && window.console.groupCollapsed) {
-				var formattedTitle = this._formatMessage(title);
-				this._isGroup = true;
-				return this._canDebug() && (isCollapsed ? window.console.groupCollapsed(formattedTitle) : window.console.group(formattedTitle)), this;
-			} else {
-				return this._canDebug() && this.log('Your browser do not support console grouping methods!'), this;
+			if (this._canDebug()) {
+				if (window.console.group && window.console.groupCollapsed) {
+					var formattedTitle = this._formatMessage(title);
+					this._isGroup = true;
+					return (isCollapsed ? window.console.groupCollapsed(formattedTitle) : window.console.group(formattedTitle)), this;
+				} else {
+					return this.log('Your browser do not support console grouping methods!'), this;
+				}
 			}
 		},
 
 		groupEnd: function() {
-			if (window.console.groupEnd) {
-				this._isGroup = false;
-				return this._canDebug() && window.console.groupEnd(), this;
-			} else {
-				return this._canDebug() && this.log('Your browser do not support console group methods!'), this;
+			if (this._canDebug()) {
+				if (window.console.groupEnd) {
+					this._isGroup = false;
+					return  window.console.groupEnd(), this;
+				} else {
+					return this.log('Your browser do not support console group methods!'), this;
+				}
 			}
 		}
 	};
@@ -1253,7 +1257,8 @@
 		// Trigger an event, firing all bound callbacks. Callbacks are passed the
 		// same arguments as `trigger` is, apart from the event name.
 		// Listening for `"all"` passes the true event name as the first argument.
-		trigger: function(eventName) {alert('trigg');
+		trigger: function(eventName) {
+			alert('trigg');
 			var list, calls, ev, callback, args;
 			var both = 2;
 			if (!(calls = this._callbacks)) {
@@ -1292,7 +1297,8 @@
 		}
 
 		// If called without 'new' goto factory
-		if (!(this instanceof smarty.Template)) {alert('sm fact');
+		if (!(this instanceof smarty.Template)) {
+			alert('sm fact');
 			return smarty.Template.factory.apply(smarty.Template, arguments);
 		}
 
@@ -1455,7 +1461,8 @@
 		 * @param {String} source   Template string
 		 * @type {Template}
 		 */
-		compile: function(source) {alert('comp');
+		compile: function(source) {
+			alert('comp');
 			this._source = '' + source;
 			smarty.Compiler(this);
 			alert('aft comp');
@@ -1777,7 +1784,8 @@
 			var compiler = new smarty.Compiler();
 			compiler._template = template;
 			compiler._source = template.getSource();
-			compiler._compile();alert('comp in 2');
+			compiler._compile();
+			alert('comp in 2');
 			template.load(compiler._closure, compiler._includes);
 		} else {
 			this._template = null;
@@ -1816,7 +1824,8 @@
 				return '{@comment ' + count + '}';
 			}.bind(this)).split('\n');
 
-			var parsedTpl = [];alert('__comp in 1');
+			var parsedTpl = [];
+			alert('__comp in 1');
 			// Iterate over template array and parse strings
 			template.forEach(function(string) {
 				var parsedString = this._compileString(string);
@@ -1845,8 +1854,9 @@
 			}", this._captureName, parsedTpl.join('\n'));
 
 			this._closure = Function(codeStr);
-			alert(this.getTemplate().getName());
-			smarty.debug.group('Compiled source: ' + this.getTemplate().getName(), true).log(this._closure.toString()).groupEnd();alert('__comp in 5');
+			alert('__comp in 4');
+			smarty.debug.group('Compiled source: ' + this.getTemplate().getName(), true).log(this._closure.toString()).groupEnd();
+			alert('__comp in 5');
 		},
 
 		/**
