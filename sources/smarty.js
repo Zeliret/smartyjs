@@ -1816,14 +1816,14 @@
 				return '{@comment ' + count + '}';
 			}.bind(this)).split('\n');
 
-			var parsedTpl = [];
+			var parsedTpl = [];alert('__comp in 1');
 			// Iterate over template array and parse strings
 			template.forEach(function(string) {
 				var parsedString = this._compileString(string);
 				parsedTpl.push(parsedString);
 				this._line++;
 			}, this);
-
+			alert('__comp in 2');
 			// Check all tags to be closed
 			var last = null;
 			while (this._stack.length > 0) {
@@ -1832,7 +1832,7 @@
 					throw new smarty.CompileException(this, "Open tag '{0}' at line {1} doesn't have close tag!", last.name, last.line);
 				}
 			}
-
+			alert('__comp in 3');
 			//window.console.log(parsedTpl);
 
 			// Wrap template compiled code
@@ -1845,7 +1845,7 @@
 			}", this._captureName, parsedTpl.join('\n'));
 
 			this._closure = Function(codeStr);
-
+			alert('__comp in 4');
 			smarty.debug.group('Compiled source: ' + this.getTemplate().getName(), true).log(this._closure.toString()).groupEnd();
 		},
 
