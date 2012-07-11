@@ -1292,7 +1292,7 @@
 		}
 
 		// If called without 'new' goto factory
-		if (!(this instanceof smarty.Template)) {
+		if (!(this instanceof smarty.Template)) {alert('sm fact');
 			return smarty.Template.factory.apply(smarty.Template, arguments);
 		}
 
