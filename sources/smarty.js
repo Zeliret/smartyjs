@@ -1253,7 +1253,7 @@
 		// Trigger an event, firing all bound callbacks. Callbacks are passed the
 		// same arguments as `trigger` is, apart from the event name.
 		// Listening for `"all"` passes the true event name as the first argument.
-		trigger: function(eventName) {
+		trigger: function(eventName) {alert('trigg');
 			var list, calls, ev, callback, args;
 			var both = 2;
 			if (!(calls = this._callbacks)) {
@@ -1267,7 +1267,7 @@
 							list.splice(i, 1);
 							i--;
 							l--;
-						} else {alert(ev);
+						} else {
 							smarty.debug.log('Eventmanager: the [{0}] event is triggered.', ev);
 
 							args = both ? Array.prototype.slice.call(arguments, 1) : arguments;
