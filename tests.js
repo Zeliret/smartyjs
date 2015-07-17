@@ -106,7 +106,6 @@ QUnit.test('Modifiers with params', function() {
 		[ "{$undefinedVar|default:'trololo'}", 'trololo' ],
 		[ "{$languages.english.learning|substr:2:3}", 'rma' ],
 		[ "{$languages.english.learning|cat:' test'}", 'normal test' ],
-		[ "{$languages.english.learning|cat:'\'|:$'}", 'normal\'|:$' ],
 		[ "{$array|join:','}", 'a,b,c' ],
 		[ "{$array|join:','|split:','|length}", '3' ],
 		[ "{$array|empty}", 'false' ],
