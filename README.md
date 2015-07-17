@@ -3,6 +3,8 @@
 Simple port of php lib Smarty 2 to js world.
 Done a couple of years ago but now is open for all.
 
+Docs: https://github.com/Zeliret/smartyjs/wiki
+
 ## Features
 
 * Vanilla js with extra jquery support
