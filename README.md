@@ -42,7 +42,7 @@ Docs: https://github.com/Zeliret/smartyjs/wiki
 * `escape`
 * `date_format`
 
-### Usage 
+### Example 
 
 ```javascript
 smarty.configure({
@@ -60,3 +60,8 @@ smarty.addModifier('date_format', function (input, format) {
   return MyUtils.dateFormat(format, input);
 });
 ```
+
+### TODO
+
+* Npm, bower, etc.
+* Latest jquery support
